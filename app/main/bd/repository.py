@@ -1,4 +1,3 @@
-import app.main.bd.config as cfg
 import psycopg2
 import subprocess
 
@@ -6,7 +5,7 @@ import subprocess
 def create_conn():
     proc = subprocess.Popen('heroku config:get DATABASE_URL -a consultaprocessosipac', stdout=subprocess.PIPE, shell=True)
     db_url = proc.stdout.read().decode('utf-8').strip()
-    return psycopg2.connect(db_url)
+    return db_url
 
 
 def create_table(cursor, connection):
@@ -29,7 +28,7 @@ def create_table(cursor, connection):
 
 
 def init_bd():
-    connection = create_conn()
+    connection = psycopg2.connect(create_conn())
     cursor = connection.cursor()
 
     create_table(cursor, connection)

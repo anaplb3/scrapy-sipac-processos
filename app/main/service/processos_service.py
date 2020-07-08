@@ -4,12 +4,13 @@ from app.main.web_scrapy.soupbib import get_processos
 from app.main.bd import repository
 from sched import scheduler
 from time import time, sleep
+import psycopg2
 from app.main.model.model import MovimentacaoProcessoDTO
 
 
 class ProcessoService:
     def __init__(self):
-        self.connection = repository.create_conn()
+        self.connection = psycopg2.connect(repository.create_conn())
         self.cursor = self.connection.cursor()
 
     def update_processos(self):
