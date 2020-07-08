@@ -1,24 +1,12 @@
 import app.main.bd.config as cfg
 import psycopg2
+import subprocess
 
 
-def create_connection():
-    return psycopg2.connect(
-        host=cfg.POSTGRES_CFG['host'],
-        port=cfg.POSTGRES_CFG['port'],
-        user=cfg.POSTGRES_CFG['user'],
-        password=cfg.POSTGRES_CFG['pwd']
-    )
-
-
-def create_connection_with_db():
-    return psycopg2.connect(
-        host=cfg.POSTGRES_CFG['host'],
-        port=cfg.POSTGRES_CFG['port'],
-        dbname=cfg.POSTGRES_CFG['dbname'],
-        user=cfg.POSTGRES_CFG['user'],
-        password=cfg.POSTGRES_CFG['pwd']
-    )
+def create_conn():
+    proc = subprocess.Popen('heroku config:get DATABASE_URL -a consultaprocessosipac', stdout=subprocess.PIPE, shell=True)
+    db_url = proc.stdout.read().decode('utf-8').strip()
+    return db_url
 
 
 def create_table(cursor, connection):
@@ -41,18 +29,7 @@ def create_table(cursor, connection):
 
 
 def init_bd():
-    connection = create_connection()
-    connection.autocommit = True
-    cursor = connection.cursor()
-
-    cursor.execute(
-        "SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'processos_sipac'")
-    exists = cursor.fetchone()
-
-    if not exists:
-        cursor.execute('CREATE DATABASE processos_sipac')
-
-    connection = create_connection_with_db()
+    connection = psycopg2.connect(create_conn())
     cursor = connection.cursor()
 
     create_table(cursor, connection)

@@ -9,7 +9,7 @@ from app.main.model.model import MovimentacaoProcessoDTO
 
 class ProcessoService:
     def __init__(self):
-        self.connection = repository.create_connection_with_db()
+        self.connection = repository.create_conn()
         self.cursor = self.connection.cursor()
 
     def update_processos(self):
