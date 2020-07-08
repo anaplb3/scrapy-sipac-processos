@@ -4,6 +4,7 @@ from app.main.controller.processos_controller import app
 from app.main.service.processos_service import ProcessoService
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.main.bd.repository import init_bd
+import os
 
 service = ProcessoService()
 
@@ -20,6 +21,8 @@ manager = Manager(app)
 def run():
     init_bd()
     cron.start()
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
-manager.run()
+if __name__ == "__main__":
+    manager.run()
