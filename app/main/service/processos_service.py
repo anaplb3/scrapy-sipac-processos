@@ -10,7 +10,7 @@ from app.main.model.model import MovimentacaoProcessoDTO
 
 class ProcessoService:
     def __init__(self):
-        self.connection = psycopg2.connect(repository.create_conn())
+        self.connection = psycopg2.connect(repository.create_conn(), sslmode="require")
         self.cursor = self.connection.cursor()
 
     def update_processos(self):
