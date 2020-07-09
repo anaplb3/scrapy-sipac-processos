@@ -8,7 +8,6 @@ service = ProcessoService()
 
 @app.route("/processos")
 def get():
-
     try:
         auxilio = request.args.get("auxilio", "", str)
         campus = request.args.get("campus", "", str)
@@ -21,3 +20,8 @@ def get():
         return jsonify({'data': results})
     except Exception as e:
         return jsonify({'data': "Algo deu errado. {}".format(str(e))})
+
+
+@app.route("/keepalive")
+def ping():
+    return "ping!"
