@@ -1,10 +1,15 @@
 from flask_script import Manager
 from flask import Flask
-from app.main.controller.processos_controller import app
+from flask_cors import CORS
 from app.main.service.processos_service import ProcessoService
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.main.bd.repository import init_bd, environment_config
 import os
+from app import blueprint
+
+app = Flask(__name__)
+app.register_blueprint(blueprint)
+CORS(app)
 
 service = ProcessoService()
 
