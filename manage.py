@@ -3,10 +3,12 @@ from flask import Flask
 from app.main.controller.processos_controller import app
 from app.main.service.processos_service import ProcessoService
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.main.bd.repository import init_bd
+from app.main.bd.repository import init_bd, environment_config
 import os
 
 service = ProcessoService()
+
+cfg = environment_config()
 
 cron = BackgroundScheduler(daemon=True, timezone='America/Sao_Paulo')
 cron.add_job(service.update_processos, 'cron', day="1-16", day_of_week=(
@@ -21,8 +23,9 @@ manager = Manager(app)
 def run():
     init_bd()
     cron.start()
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    port = cfg["port"]
+    app.run(host=cfg["host"], port=port, debug=cfg["debug"])
+
 
 if __name__ == "__main__":
     manager.run()

@@ -1,9 +1,13 @@
 import psycopg2
 import os
+from config import DEV_CFG, PROD_CFG
 
 
-def create_conn():
-    return os.environ['DATABASE_URL']
+def environment_config():
+    if os.environ['ENV'] == 'prod':
+        return PROD_CFG
+    else:
+        return DEV_CFG
 
 
 def create_table(cursor, connection):
@@ -26,7 +30,8 @@ def create_table(cursor, connection):
 
 
 def init_bd():
-    connection = psycopg2.connect(create_conn(), sslmode='require')
+    cfg = environment_config()
+    connection = psycopg2.connect(cfg["database_url"], sslmode=cfg["sslmode"])
     cursor = connection.cursor()
 
     create_table(cursor, connection)
