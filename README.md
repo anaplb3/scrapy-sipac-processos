@@ -7,15 +7,11 @@ API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atual
  - Auxílio emergencial COVID19 ("auxilio_emergencial")
 
 # Response
-Os dados estão disponíveis na url [https://consultaprocessosipac.herokuapp.com/processos](https://consultaprocessosipac.herokuapp.com/processos). Para o GET é necessário enviar um json no seguinte formato:
+Os dados estão disponíveis na url [https://consultaprocessosipac.herokuapp.com/processos](https://consultaprocessosipac.herokuapp.com/processos). Para o GET é necessário enviar na url os parâmetros no formato abaixo:
 
-    {
     
-    "auxilio": "auxilio_emergencial",
+    /processos?auxilio=auxilio_moradia&campus=IV
     
-    "campus": "IV"
-    
-    }
 o que retorna um array com cada movimentação do processo em questão:
 
     {

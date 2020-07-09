@@ -10,10 +10,14 @@ service = ProcessoService()
 def get():
 
     try:
-        json = request.get_json(force=True)
-        auxilio = json['auxilio']
-        campus = json['campus']
+        auxilio = request.args.get("auxilio", "", str)
+        campus = request.args.get("campus", "", str)
 
-        return jsonify({'data': service.get_processo(campus, auxilio)})
+        results = service.get_processo(campus, auxilio)
+
+        if results == None:
+            return jsonify({'data': "Campos inválidos."})
+
+        return jsonify({'data': results})
     except Exception as e:
-        return jsonify({'data': "Deu errado. {}".format(str(e))})
+        return jsonify({'data': "Algo deu errado. {}".format(str(e))})

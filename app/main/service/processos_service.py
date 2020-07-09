@@ -73,6 +73,8 @@ class ProcessoService:
         self.connection.commit()
 
     def get_processo(self, campus, auxilio):
+        if campus == "" or auxilio == "":
+            return None
         query = """SELECT data_origem, unidade_origem, unidade_destino, recebido_em, atualizado_em FROM processos 
         WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
         self.cursor.execute(query)
