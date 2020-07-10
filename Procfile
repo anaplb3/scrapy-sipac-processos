@@ -1,1 +1,1 @@
-web: python manage.py run
+web: gunircorn app:app
