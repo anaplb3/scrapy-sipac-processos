@@ -18,11 +18,11 @@ class Processo(Resource):
             auxilio = request.args.get("auxilio", "", str)
             campus = request.args.get("campus", "", str)
 
-            results = service.get_processo(campus, auxilio)
+            processo = service.get_processo(campus, auxilio)
 
-            if results == None:
+            if processo == None:
                 return jsonify({'data': "Campos inválidos."})
 
-            return jsonify({'data': results})
+            return jsonify({'data': processo.serialize()})
         except Exception as e:
             return jsonify({'data': "Algo deu errado. {}".format(str(e))})
