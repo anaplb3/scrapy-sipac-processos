@@ -162,4 +162,7 @@ myvenv/
 # Ignore all local history of files
 .history
 
+### Arquivo de teste
+teste.py
+
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,visualstudiocode

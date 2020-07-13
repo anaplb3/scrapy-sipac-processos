@@ -14,10 +14,10 @@ def create_table(cursor, connection):
     query_create_table = """
         CREATE TABLE IF NOT EXISTS processos(
             id SERIAL PRIMARY KEY,
-            data_origem VARCHAR NOT NULL,
-            unidade_origem VARCHAR NOT NULL,
             unidade_destino VARCHAR NOT NULL,
             recebido_em VARCHAR NOT NULL,
+            status_terminado BOOLEAN NOT NULL,
+            link_processo VARCHAR NOT NULL,
             atualizado_em TIMESTAMP NOT NULL,
             campus VARCHAR NOT NULL,
             tipo_processo VARCHAR NOT NULL,

@@ -1,4 +1,5 @@
 import datetime
+import pytz
 from app.main.web_scrapy.sipac_selenium import open
 from app.main.web_scrapy.soupbib import get_processos
 from app.main.bd import repository
@@ -21,7 +22,7 @@ class ProcessoService:
 
         repository.create_table(self.cursor, self.connection)
 
-        processos = ["auxilio_emergencial", "auxilio_alimentacao_res",
+        processos = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
                      "auxilio_alimentacao", "auxilio_moradia"]
         campus = ["I", "II", "III", "IV"]
 
@@ -32,29 +33,27 @@ class ProcessoService:
                 if processo == "auxilio_emergencial":
                     mes = "{}/{}".format(self.format_data(2), ano)
 
-                print("processo = {} | campus = {} | referente a = {}".format(
-                    processo, camp, mes))
-
                 if processo == "auxilio_alimentacao" and camp == "II":
                     continue
                 try:
-                    resultados = get_processos(open(processo, camp, mes))
-                    if resultados == None:
+                    resultados_selenium = open(processo, camp, mes)
+                    movimentacao = get_processos(
+                        resultados_selenium[0], resultados_selenium[1])
+                    if movimentacao == None:
                         continue
                     else:
-                        for mov in resultados:
-                            self.execute_update(mov, camp, processo, mes)
+                        self.execute_update(movimentacao, camp, processo, mes)
                 except:
                     break
 
-    def execute_update(self, mov, camp, processo, mes):
-        timestamp = datetime.datetime.today()
+    def execute_update(self, movimentacao, camp, processo, mes):
+        timestamp = self.format_timezone()
         query_update_processos = """
             INSERT INTO processos(
-            data_origem,
-            unidade_origem,
             unidade_destino,
             recebido_em,
+            status_terminado,
+            link_processo,
             atualizado_em,
             campus,
             tipo_processo,
@@ -62,10 +61,10 @@ class ProcessoService:
             )
             VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
             """.format(
-            mov.data_origem,
-            mov.unidade_origem,
-            mov.unidade_destino,
-            mov.recebido_em,
+            movimentacao.unidade_destino,
+            movimentacao.recebido_em,
+            movimentacao.status_terminado,
+            movimentacao.link_processo,
             timestamp, camp,
             processo, mes)
 
@@ -75,23 +74,15 @@ class ProcessoService:
     def get_processo(self, campus, auxilio):
         if campus == "" or auxilio == "":
             return None
-        query = """SELECT data_origem, unidade_origem, unidade_destino, recebido_em, atualizado_em FROM processos 
+        query = """SELECT unidade_destino, recebido_em, 
+        status_terminado, link_processo, atualizado_em FROM processos 
         WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
         self.cursor.execute(query)
-        processo = list(self.cursor.fetchall())
+        processo = list(self.cursor.fetchone())
 
-        results = []
-
-        for movimentacao in processo:
-            if '<td' in movimentacao[0]:
-                continue
-            else:
-                mov = MovimentacaoProcessoDTO(movimentacao[0], movimentacao[1],
-                                              movimentacao[2], movimentacao[3],
-                                              movimentacao[4], auxilio, campus)
-                results.append(mov.serialize())
-
-        return results
+        return MovimentacaoProcessoDTO(processo[0], processo[1],
+                                       processo[2], processo[3],
+                                       processo[4], auxilio, campus)
 
     def format_data(self, minus):
         mydate = datetime.datetime.now()
@@ -101,3 +92,7 @@ class ProcessoService:
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 
         return months[month-minus]
+
+    def format_timezone(self):
+        utc_now = pytz.utc.localize(datetime.datetime.utcnow())
+        return utc_now.astimezone(pytz.timezone("America/Sao_Paulo"))

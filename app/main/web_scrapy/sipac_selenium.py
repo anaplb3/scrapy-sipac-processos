@@ -2,12 +2,13 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 import os
+from ..bd.repository import environment_config
 
 
 def find_tipo_processo(tipo_processo, campus):
     if tipo_processo == "auxilio_emergencial":
         return "PAGAMENTO DE BOLSISTAS DE AUXÍLIO EMERGENCIAL ALIMENTAÇÃO COVID19 - CAMPUS {} - PRAPE (R$ 250,00). REFERENTE: {}."
-    elif tipo_processo == "auxilio_alimentacao_res":
+    elif tipo_processo == "auxilio_alimentacao_residencia":
         if campus == "IV":
             return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 410,00). REFERENTE: {}."
         else:
@@ -17,18 +18,22 @@ def find_tipo_processo(tipo_processo, campus):
     elif tipo_processo == "auxilio_moradia":
         return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-MORADIA CAMPUS {} PRAPE (R$ 570,00). REFERENTE: {}"
 
+
 def setting_selenium():
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-    return driver
+    if environment_config()["debug"]:
+        return webdriver.Chrome("C:\chromedriver")
+    else:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        driver = webdriver.Chrome(executable_path=os.environ.get(
+            "CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        return driver
 
 
 def open(tipo_processo, campus, mes):
-
     driver = setting_selenium()
     res = find_tipo_processo(tipo_processo, campus)
 
@@ -67,4 +72,4 @@ def open(tipo_processo, campus, mes):
         if (auxilio in row.text):
             row.find_element(By.TAG_NAME, "img").click()
             driver.close
-            return driver.page_source
+            return driver.page_source, driver.current_url

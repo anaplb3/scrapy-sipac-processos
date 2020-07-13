@@ -3,7 +3,7 @@ API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atual
 
  - Moradia ("auxilio_moradia")
  - Alimentação ("auxilio_alimentacao")
- - Alimentação residência ("auxilio_alimentacao_res")
+ - Alimentação residência ("auxilio_alimentacao_residencia")
  - Auxílio emergencial COVID19 ("auxilio_emergencial")
 
 # Response
@@ -12,68 +12,19 @@ Os dados estão disponíveis para visualização [aqui](https://consultaprocesso
     
     /processos?auxilio=auxilio_moradia&campus=IV
     
-o que retorna um array com cada movimentação do processo em questão:
+o que retorna um objeto com os seguintes atributos:
 
     {
-    
-	    "data": [
-    
-	    {
-    
-		    "atualizado_em": "Wed, 08 Jul 2020 15:47:35 GMT",
-		    
-		    "campus": "IV",
-		    
-		    "data_origem": " 04/06/2020 17:38",
-		    
-		    "recebido_em": " 04/06/2020 18:50",
-		    
-		    "tipo_auxilio": "auxilio_emergencial",
-		    
-		    "unidade_destino": " PRAPE - COORDENAÇÃO DE ASSISTÊNCIA E PROMOÇÃO ESTUDANTIS (COAPE) (11.00.63.01)",
-		    
-		    "unidade_origem": " PRÓ-REITORIA DE ASSISTÊNCIA E PROMOÇÃO AO ESTUDANTE (PRAPE) (11.00.63)"
-    
-	    },
-    
-	    {
-    
-		    "atualizado_em": "Wed, 08 Jul 2020 15:47:35 GMT",
-		    
-		    "campus": "IV",
-		    
-		    "data_origem": " 05/06/2020 17:51",
-		    
-		    "recebido_em": " 05/06/2020 22:19",
-		    
-		    "tipo_auxilio": "auxilio_emergencial",
-		    
-		    "unidade_destino": " PRÓ-REITORIA DE ADMINISTRAÇÃO (PRA) (11.00.47)",
-		    
-		    "unidade_origem": " PRAPE - COORDENAÇÃO DE ASSISTÊNCIA E PROMOÇÃO ESTUDANTIS (COAPE) (11.00.63.01)"
-		    
-	    },
-	    {
-
-		    "atualizado_em": "Wed, 08 Jul 2020 15:47:35 GMT",
-		    
-		    "campus": "IV",
-		    
-		    "data_origem": " 07/07/2020 13:25",
-		    
-		    "recebido_em": "",
-		    
-		    "tipo_auxilio": "auxilio_emergencial",
-		    
-		    "unidade_destino": " PRA - ARQUIVO DA DAF (11.01.08.01.02.02)",
-		    
-		    "unidade_origem": " PRA - DIVISÃO DE ADMINISTRAÇÃO E FINANÇAS (11.01.08.01.02)"
-    
-	    }
-    
-		]
-    
-    }
+		"data": {
+			"atualizado_em": "Mon, 13 Jul 2020 16:51:51 GMT",
+			"campus": "IV",
+			"link_processo": "https://sipac.ufpb.br/public/jsp/processos/processo_detalhado.jsf?id=1881839",
+			"recebido_em": "",
+			"status_terminado": true,
+			"tipo_auxilio": "auxilio_moradia",
+			"unidade_destino": " PRA - ARQUIVO DA DAF (11.01.08.01.02.02)"
+		}
+	}
 	    
       
 Como a API ainda está em desenvolvimento haverá mudanças.
