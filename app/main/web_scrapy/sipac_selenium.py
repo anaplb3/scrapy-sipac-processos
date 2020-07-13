@@ -10,13 +10,13 @@ def find_tipo_processo(tipo_processo, campus):
         return "PAGAMENTO DE BOLSISTAS DE AUXÍLIO EMERGENCIAL ALIMENTAÇÃO COVID19 - CAMPUS {} - PRAPE (R$ 250,00). REFERENTE: {}."
     elif tipo_processo == "auxilio_alimentacao_residencia":
         if campus == "IV":
-            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 410,00). REFERENTE: {}."
+            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 580,00). REFERENTE: {}."
         else:
-            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 260,00). REFERENTE: {}."
+            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 400,00). REFERENTE: {}."
     elif tipo_processo == "auxilio_alimentacao":
-        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMENTAÇÃO CAMPUS {} PRAPE (R$ 240,00). REFERENTE: {}"
+        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMENTAÇÃO CAMPUS {} PRAPE (R$ 360,00). REFERENTE: {}"
     elif tipo_processo == "auxilio_moradia":
-        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-MORADIA CAMPUS {} PRAPE (R$ 570,00). REFERENTE: {}"
+        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-MORADIA CAMPUS {} PRAPE (R$ 600,00). REFERENTE: {}"
 
 
 def setting_selenium():
