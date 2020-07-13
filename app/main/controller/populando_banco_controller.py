@@ -1,13 +1,20 @@
 from flask import jsonify, request, Flask
 from flask_restx import Resource, Namespace, fields
 from app.main.service.processos_service import ProcessoService
+from app.main.bd.repository import environment_config
 
 api = Namespace('Populando banco', "Popular o banco.")
 
 service = ProcessoService()
 
+cfg = environment_config()
+
 
 @api.route("")
 class PopulandoBanco(Resource):
     def get(self):
-        service.update_processos()
+        chave = request.args.get("chave", "", str)
+        if chave == cfg["chave_banco"]:
+            service.update_processos()
+        else:
+            return jsonify({'data': 'Chave incorreta'})
