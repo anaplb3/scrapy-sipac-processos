@@ -14,7 +14,7 @@ cfg = environment_config()
 class PopulandoBanco(Resource):
     def get(self):
         chave = request.args.get("chave", "", str)
-        if chave == cfg["chave_banco"]:
+        if chave == cfg["chave_populando"]:
             service.update_processos()
         else:
             return jsonify({'data': 'Chave incorreta'})
