@@ -25,13 +25,8 @@ class ProcessoService:
             for camp in campus:
                 ano = datetime.datetime.now().year
                 mes = "{}/{}".format(self.find_month(processo, camp), ano)
-                print("\n")
-                print("processoService. processo = {} | campus = {}".format(
-                    processo, camp))
 
                 if self.auxilios_inexistentes(processo, camp):
-                    print("entrou no if. processo = {} | campus = {}".format(
-                        processo, camp))
                     continue
                 try:
                     resultados_selenium = open(processo, camp, mes)
@@ -51,7 +46,6 @@ class ProcessoService:
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
         self.cursor.execute(query)
         resultado = list(self.cursor.fetchall())
-        print("resultado = {}".format(resultado))
         status = resultado[0][0]
         mes_referente = resultado[0][1].split("/")[0]
         return self.get_month(status, mes_referente)
@@ -61,10 +55,8 @@ class ProcessoService:
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
         index = months.index(mes_referente)
         if status:
-            print("status true")
             return months[index + 1]
         else:
-            print("status false")
             return mes_referente
 
     def auxilios_inexistentes(self, auxilio, camp):
@@ -74,8 +66,6 @@ class ProcessoService:
             return False
 
     def execute_update(self, movimentacao, camp, processo, mes):
-        print("começou execute update")
-        print("\n")
         timestamp = self.format_timezone()
         query_update_processos = """
             UPDATE processos

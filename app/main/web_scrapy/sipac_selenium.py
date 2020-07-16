@@ -34,7 +34,7 @@ def open(tipo_processo, campus, mes):
     driver = setting_selenium()
     auxilio = find_tipo_processo(tipo_processo, campus)
 
-    print("sipac_selenium. auxilio = {} | campus = {} | mes = {}".format(
+    print("auxilio = {} | campus = {} | mes = {}".format(
         auxilio, campus, mes))
     url = "https://sipac.ufpb.br/public/jsp/processos/consulta_processo.jsf"
     nome_interessado = "prape"

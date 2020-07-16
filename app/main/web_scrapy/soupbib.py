@@ -3,7 +3,6 @@ from app.main.model.model import MovimentacaoProcesso, MovimentacaoProcesso
 
 
 def get_processos(html_content, url):
-    print("url = {}".format(url))
     soup = BeautifulSoup(html_content, 'html.parser')
 
     table_name = "Movimentações do Processo"
@@ -22,8 +21,6 @@ def get_processos(html_content, url):
     recebido_em = ultima_movimentacao_td[4].replace(
         "<td>", "").replace("\n", "").replace("</td>", "")
     status_terminado = "PRA - ARQUIVO DA DAF" in unidade_destino
-
-    print("unidade = {} \n recebido = {} \n status = {}".format(unidade_destino, recebido_em, status_terminado))
 
     return MovimentacaoProcesso(unidade_destino, recebido_em, status_terminado, url)
 
