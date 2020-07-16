@@ -7,16 +7,13 @@ from ..bd.repository import environment_config
 
 def find_tipo_processo(tipo_processo, campus):
     if tipo_processo == "auxilio_emergencial":
-        return "PAGAMENTO DE BOLSISTAS DE AUXÍLIO EMERGENCIAL ALIMENTAÇÃO COVID19 - CAMPUS {} - PRAPE (R$ 250,00). REFERENTE: {}."
+        return "EMERGENCIAL"
     elif tipo_processo == "auxilio_alimentacao_residencia":
-        if campus == "IV":
-            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 580,00). REFERENTE: {}."
-        else:
-            return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMEN RES FDS CAMPUS {} PRAPE (R$ 400,00). REFERENTE: {}."
+        return "RESIDÊNCIA"
     elif tipo_processo == "auxilio_alimentacao":
-        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-ALIMENTAÇÃO CAMPUS {} PRAPE (R$ 360,00). REFERENTE: {}"
+        return "ALIMENTAÇÃO"
     elif tipo_processo == "auxilio_moradia":
-        return "PAGAMENTO DE BOLSISTAS DE BOLSA AUXÍLIO-MORADIA CAMPUS {} PRAPE (R$ 600,00). REFERENTE: {}"
+        return "MORADIA"
 
 
 def setting_selenium():
@@ -35,10 +32,10 @@ def setting_selenium():
 
 def open(tipo_processo, campus, mes):
     driver = setting_selenium()
-    res = find_tipo_processo(tipo_processo, campus)
+    auxilio = find_tipo_processo(tipo_processo, campus)
 
-    auxilio = res.format(campus, mes)
-    print("auxilio = {}".format(auxilio))
+    print("sipac_selenium. auxilio = {} | campus = {} | mes = {}".format(
+        auxilio, campus, mes))
     url = "https://sipac.ufpb.br/public/jsp/processos/consulta_processo.jsf"
     nome_interessado = "prape"
 
@@ -55,21 +52,43 @@ def open(tipo_processo, campus, mes):
 
     time.sleep(1)
 
-    table = driver.find_element(By.CLASS_NAME, "listagem").text
+    table = driver.find_element(By.CLASS_NAME, "listagem")
     index = 1
-    while (not auxilio in table):
+    achou = True
+    while(achou):
         if index >= 10:
             return None
+        time.sleep(1)
+        table = driver.find_element(By.CLASS_NAME, "listagem")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        for row in rows:
+            assunto = row.text
+            if find_auxilio(assunto, auxilio, campus, mes):
+                print("assunto if = {}".format(assunto))
+                achou = False
+                row.find_element(By.TAG_NAME, "img").click()
+                driver.close
+                return driver.page_source, driver.current_url
+        index += 1
         driver.find_element_by_name(
             "documentoForm:j_id_jsp_1859633818_26").click()
-        time.sleep(1)
-        table = driver.find_element(By.CLASS_NAME, "listagem").text
-        index += 1
 
-    table = driver.find_element(By.CLASS_NAME, "listagem")
-    rows = table.find_elements(By.TAG_NAME, "tr")
-    for row in rows:
-        if (auxilio in row.text):
-            row.find_element(By.TAG_NAME, "img").click()
-            driver.close
-            return driver.page_source, driver.current_url
+
+def find_auxilio(assunto, auxilio, campus, mes):
+    if "FOLHA DE PAGAMENTO" in assunto:
+        return False
+    is_auxilio = auxilio in assunto
+    if auxilio == "ALIMENTAÇÃO":
+        is_auxilio = (auxilio in assunto) and (
+            "EMERGENCIAL" not in assunto) and ("RESIDENTES" not in assunto)
+    is_campus = find_campus(assunto, campus)
+    is_mes = mes in assunto
+    return is_auxilio and is_campus and is_mes
+
+
+def find_campus(text, campus):
+    auxilio_list = text.split(" ")
+    for word in auxilio_list:
+        if word == campus:
+            return True
+    return False

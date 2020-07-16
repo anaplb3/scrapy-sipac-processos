@@ -29,7 +29,7 @@ class MovimentacaoProcesso(object):
 
     def serialize(self):
         return {
-            'unidade_origem': self.unidade_origem,
+            'unidade_destino': self.unidade_destino,
             'recebido_em': self.recebido_em,
             'status_terminado': self.status_terminado,
             'link_processo': self.link_processo

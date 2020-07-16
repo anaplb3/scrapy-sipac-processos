@@ -25,40 +25,57 @@ class ProcessoService:
             for camp in campus:
                 ano = datetime.datetime.now().year
                 mes = "{}/{}".format(self.find_month(processo, camp), ano)
+                print("\n")
+                print("processoService. processo = {} | campus = {}".format(
+                    processo, camp))
 
-                if processo == "auxilio_alimentacao" and camp == "II":
+                if self.auxilios_inexistentes(processo, camp):
+                    print("entrou no if. processo = {} | campus = {}".format(
+                        processo, camp))
                     continue
                 try:
                     resultados_selenium = open(processo, camp, mes)
                     movimentacao = get_processos(
                         resultados_selenium[0], resultados_selenium[1])
+
                     if movimentacao == None:
                         continue
                     else:
                         self.execute_update(movimentacao, camp, processo, mes)
-                except:
-                    break
+                except Exception as e:
+                    print("ProcessosServiceError: {}".format(str(e)))
+                    continue
 
     def find_month(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
         self.cursor.execute(query)
         resultado = list(self.cursor.fetchall())
-        print(resultado)
-        status = resultado[0]
-        mes_referente = resultado[1].split("/")[0]
+        print("resultado = {}".format(resultado))
+        status = resultado[0][0]
+        mes_referente = resultado[0][1].split("/")[0]
         return self.get_month(status, mes_referente)
 
     def get_month(self, status, mes_referente):
         months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-        index_mes_atual = months.index(mes_referente)
+        index = months.index(mes_referente)
         if status:
-            return months[index_mes_atual + 2]
+            print("status true")
+            return months[index + 1]
         else:
+            print("status false")
             return mes_referente
 
+    def auxilios_inexistentes(self, auxilio, camp):
+        if (auxilio == "auxilio_alimentacao" and camp == "III") or (auxilio == "auxilio_alimentacao" and camp == "II") or (auxilio == "auxilio_alimentacao_residencia" and camp == "I"):
+            return True
+        else:
+            return False
+
     def execute_update(self, movimentacao, camp, processo, mes):
+        print("começou execute update")
+        print("\n")
         timestamp = self.format_timezone()
         query_update_processos = """
             UPDATE processos
@@ -95,15 +112,6 @@ class ProcessoService:
         return MovimentacaoProcessoDTO(processo[0], processo[1],
                                        processo[2], processo[3],
                                        processo[4], auxilio, campus)
-
-    def format_data(self, minus):
-        mydate = datetime.datetime.now()
-        month = mydate.month
-
-        months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-
-        return months[month-minus]
 
     def format_timezone(self):
         utc_now = pytz.utc.localize(datetime.datetime.utcnow())
