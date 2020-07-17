@@ -1,10 +1,14 @@
 # scrapy-sipac-processos
-API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atualmente estão disponíveis os Campus I, II, III, IV e os auxílios:
+API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atualmente estão disponíveis os Campus I, MANGABEIRA, II, III, IV, e os auxílios:
 
  - Moradia ("auxilio_moradia")
  - Alimentação ("auxilio_alimentacao")
  - Alimentação residência ("auxilio_alimentacao_residencia")
  - Auxílio emergencial COVID19 ("auxilio_emergencial")
+ - Residência RUMF ("auxilio_residencia_rumf")
+ - Residência RUFET ("auxilio_residencia_rufet")
+ - Alimentação residentes Mangabeira e Santa Rita ("auxilio_residentes")
+ 
 
 # Response
 Os dados estão disponíveis para visualização [aqui](https://consultaprocessosipac.herokuapp.com/api/v1/docs). Para o GET é necessário enviar na url os parâmetros no formato abaixo:
