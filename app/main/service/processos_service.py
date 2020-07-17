@@ -45,8 +45,8 @@ class ProcessoService:
     def find_month(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
-        #print("query finding month: {}".format(query))
         self.cursor.execute(query)
+
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
             if auxilio == "auxilio_emergencial":
@@ -99,24 +99,24 @@ class ProcessoService:
     def execute_update(self, movimentacao, camp, processo, mes):
         timestamp = self.format_timezone()
         query_update_processos = """
-            INSERT INTO processos(
-            unidade_destino,
-            recebido_em,
-            status_terminado,
-            link_processo,
-            atualizado_em,
-            campus,
-            tipo_processo,
-            mes_referente
-            )
-            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
+            UPDATE processos
+            SET unidade_destino = '{}',
+            recebido_em = '{}',
+            status_terminado = '{}',
+            link_processo = '{}',
+            atualizado_em = '{}',
+            campus = '{}',
+            tipo_processo = '{}',
+            mes_referente = '{}'
+            WHERE tipo_processo = '{}' and campus = '{}'
             """.format(
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
             movimentacao.link_processo,
             timestamp, camp,
-            processo, mes)
+            processo, mes,
+            processo, camp)
 
         self.cursor.execute(query_update_processos)
         self.connection.commit()

@@ -16,7 +16,7 @@ service = ProcessoService()
 cfg = environment_config()
 
 cron = BackgroundScheduler(daemon=True, timezone='America/Sao_Paulo')
-cron.add_job(service.update_processos, 'cron', day="1-16", day_of_week=(
+cron.add_job(service.update_processos, 'cron', day_of_week=(
     'mon-fri'), hour='7-16')
 
 app.app_context().push()
