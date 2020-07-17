@@ -14,6 +14,12 @@ def find_tipo_processo(tipo_processo, campus):
         return "ALIMENTAÇÃO"
     elif tipo_processo == "auxilio_moradia":
         return "MORADIA"
+    elif tipo_processo == "auxilio_residencia_rumf":
+        return "RUMF"
+    elif tipo_processo == "auxilio_residencia_rufet":
+        return "RUFET"
+    elif tipo_processo == "auxilio_residentes":
+        return "RESIDENTES"
 
 
 def setting_selenium():
@@ -64,7 +70,7 @@ def open(tipo_processo, campus, mes):
         for row in rows:
             assunto = row.text
             if find_auxilio(assunto, auxilio, campus, mes):
-                print("assunto if = {}".format(assunto))
+                print("auxílio encontrado = {}".format(assunto))
                 achou = False
                 row.find_element(By.TAG_NAME, "img").click()
                 driver.close

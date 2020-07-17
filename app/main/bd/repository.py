@@ -34,6 +34,8 @@ def init_bd():
     connection = psycopg2.connect(cfg["database_url"], sslmode=cfg["sslmode"])
     cursor = connection.cursor()
 
+    cursor.execute("DROP TABLE processos")
+
     create_table(cursor, connection)
 
     connection.close()

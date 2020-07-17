@@ -164,9 +164,6 @@ myvenv/
 
 ### Arquivo de teste
 teste.py
-log.txt
-log2.txt
-log3.txt
-log4.txt
+logs/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,visualstudiocode

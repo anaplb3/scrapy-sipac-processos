@@ -40,15 +40,22 @@ class ProcessoService:
                 except Exception as e:
                     print("ProcessosServiceError: {}".format(str(e)))
                     continue
+        self.auxilios_campus_i()
 
     def find_month(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
+        #print("query finding month: {}".format(query))
         self.cursor.execute(query)
         resultado = list(self.cursor.fetchall())
-        status = resultado[0][0]
-        mes_referente = resultado[0][1].split("/")[0]
-        return self.get_month(status, mes_referente)
+        if len(resultado) == 0:
+            if auxilio == "auxilio_emergencial":
+                return "Julho"
+            return "Agosto"
+        else:
+            status = resultado[0][0]
+            mes_referente = resultado[0][1].split("/")[0]
+            return self.get_month(status, mes_referente)
 
     def get_month(self, status, mes_referente):
         months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -59,6 +66,30 @@ class ProcessoService:
         else:
             return mes_referente
 
+    def auxilios_campus_i(self):
+        processos = ["auxilio_residencia_rumf",
+                     "auxilio_residencia_rufet", "auxilio_residentes"]
+        campus = "I"
+        ano = datetime.datetime.now().year
+
+        for processo in processos:
+            mes = "{}/{}".format(self.find_month(processo, campus), ano)
+
+            try:
+                if processo == "auxilio_residentes":
+                    campus = "MANGABEIRA"
+                resultados_selenium = open(processo, campus, mes)
+                movimentacao = get_processos(
+                    resultados_selenium[0], resultados_selenium[1])
+
+                if movimentacao == None:
+                    continue
+                else:
+                    self.execute_update(movimentacao, campus, processo, mes)
+            except Exception as e:
+                print("ProcessosServiceError: {}".format(str(e)))
+                continue
+
     def auxilios_inexistentes(self, auxilio, camp):
         if (auxilio == "auxilio_alimentacao" and camp == "III") or (auxilio == "auxilio_alimentacao" and camp == "II") or (auxilio == "auxilio_alimentacao_residencia" and camp == "I"):
             return True
@@ -68,24 +99,24 @@ class ProcessoService:
     def execute_update(self, movimentacao, camp, processo, mes):
         timestamp = self.format_timezone()
         query_update_processos = """
-            UPDATE processos
-            SET unidade_destino = '{}',
-                recebido_em = '{}',
-                status_terminado = {},
-                link_processo = '{}',
-                atualizado_em = '{}',
-                campus = '{}',
-                tipo_processo = '{}',
-                mes_referente = '{}'
-            WHERE tipo_processo = '{}' and campus = '{}'
+            INSERT INTO processos(
+            unidade_destino,
+            recebido_em,
+            status_terminado,
+            link_processo,
+            atualizado_em,
+            campus,
+            tipo_processo,
+            mes_referente
+            )
+            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
             """.format(
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
             movimentacao.link_processo,
             timestamp, camp,
-            processo, mes,
-            processo, camp)
+            processo, mes)
 
         self.cursor.execute(query_update_processos)
         self.connection.commit()
