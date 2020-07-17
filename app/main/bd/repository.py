@@ -35,6 +35,7 @@ def init_bd():
     cursor = connection.cursor()
 
     cursor.execute("DROP TABLE processos")
+    connection.commit()
 
     create_table(cursor, connection)
 
