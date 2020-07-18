@@ -8,6 +8,11 @@ url_prefix = "/api/v1"
 
 
 class MyCustomApi(Api):
+    @property
+    def specs_url(self):
+        """Monkey patch for HTTPS"""
+        scheme = 'http' if '5000' in self.base_url else 'https'
+        return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
 
     def _register_apidoc(self, app: Flask) -> None:
         conf = app.extensions.setdefault('restplus', {})
