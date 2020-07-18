@@ -9,8 +9,8 @@ service = ProcessoService()
 
 @api.route("")
 @api.doc(params={
-    "auxilio": "Tipo de auxílio (auxilio_emergencial, auxilio_alimentacao_res, auxilio_alimentacao, auxilio_moradia)",
-    "campus": "Campus da UFPB referente ao auxílio (I, II, III, IV)"
+    "auxilio": "Tipo de auxílio (auxilio_emergencial, auxilio_alimentacao_residencia, auxilio_alimentacao, auxilio_moradia, auxilio_residencia_rumf, auxilio_residencia_rufet, auxilio_residentes)",
+    "campus": "Campus da UFPB referente ao auxílio (I, MANGABEIRA, II, III, IV)"
 })
 class Processo(Resource):
     def get(self):
