@@ -20,6 +20,8 @@ def find_tipo_processo(tipo_processo, campus):
         return "RUFET"
     elif tipo_processo == "auxilio_residentes":
         return "RESIDENTES"
+    elif tipo_processo == "auxilio_emergencial_complementar":
+        return "ALIMENTAÇÃO COMPLEMENTAR"
 
 
 def setting_selenium():
