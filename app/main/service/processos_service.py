@@ -71,7 +71,7 @@ class ProcessoService:
         processo = "auxilio_emergencial_complementar"
         campus = "III"
         ano = datetime.datetime.now().year
-        mes = "{}/{}".format(self.find_month(processo, camp), ano)
+        mes = "{}/{}".format(self.find_month(processo, campus), ano)
         try:
             resultados_selenium = open(processo, campus, mes)
             movimentacao = get_processos(
