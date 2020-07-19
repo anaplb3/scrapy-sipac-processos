@@ -5,6 +5,7 @@ API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atual
  - Alimentação ("auxilio_alimentacao")
  - Alimentação residência ("auxilio_alimentacao_residencia")
  - Auxílio emergencial COVID19 ("auxilio_emergencial")
+ - Auxílio emergencial complementar COVID19 ("auxilio_emergencial_complementar")
  - Residência RUMF ("auxilio_residencia_rumf")
  - Residência RUFET ("auxilio_residencia_rufet")
  - Alimentação residentes Mangabeira e Santa Rita ("auxilio_residentes")

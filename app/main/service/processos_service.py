@@ -71,7 +71,7 @@ class ProcessoService:
         processo = "auxilio_emergencial_complementar"
         campus = "III"
         ano = datetime.datetime.now().year
-        mes = "Julho/2020"
+        mes = "{}/{}".format(self.find_month(processo, camp), ano)
         try:
             resultados_selenium = open(processo, campus, mes)
             movimentacao = get_processos(
@@ -79,7 +79,7 @@ class ProcessoService:
             if movimentacao == None:
                 raise Exception
             else:
-                self.execute_insert(movimentacao, campus, processo, mes)
+                self.execute_update(movimentacao, campus, processo, mes)
         except Exception as e:
             print("ProcessoServiceError: {}".format(str(e)))
 
