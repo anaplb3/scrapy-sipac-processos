@@ -40,7 +40,8 @@ class ProcessoService:
                 except Exception as e:
                     print("ProcessosServiceError: {}".format(str(e)))
                     continue
-        self.auxilios_campus_i()
+        self.auxilios_campus_I()
+        self.auxilio_complementar_campus_III()
 
     def find_month(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
@@ -66,7 +67,23 @@ class ProcessoService:
         else:
             return mes_referente
 
-    def auxilios_campus_i(self):
+    def auxilio_complementar_campus_III(self):
+        processo = "auxilio_emergencial_complementar"
+        campus = "III"
+        ano = datetime.datetime.now().year
+        mes = "Julho/2020"
+        try:
+            resultados_selenium = open(processo, campus, mes)
+            movimentacao = get_processos(
+                resultados_selenium[0], resultados_selenium[1])
+            if movimentacao == None:
+                raise Exception
+            else:
+                self.execute_insert(movimentacao, campus, processo, mes)
+        except Exception as e:
+            print("ProcessoServiceError: {}".format(str(e)))
+
+    def auxilios_campus_I(self):
         processos = ["auxilio_residencia_rumf",
                      "auxilio_residencia_rufet", "auxilio_residentes"]
         campus = "I"
@@ -97,7 +114,7 @@ class ProcessoService:
             return False
 
     def execute_update(self, movimentacao, camp, processo, mes):
-        timestamp = self.format_timezone()
+        timestamp = datetime.datetime.today()
         query_update_processos = """
             UPDATE processos
             SET unidade_destino = '{}',
@@ -121,6 +138,31 @@ class ProcessoService:
         self.cursor.execute(query_update_processos)
         self.connection.commit()
 
+    def execute_insert(self, movimentacao, camp, processo, mes):
+        timestamp = datetime.datetime.today()
+        query_update_processos = """
+            INSERT INTO processos(
+            unidade_destino,
+            recebido_em,
+            status_terminado,
+            link_processo,
+            atualizado_em,
+            campus,
+            tipo_processo,
+            mes_referente
+            )
+            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
+            """.format(
+            movimentacao.unidade_destino,
+            movimentacao.recebido_em,
+            movimentacao.status_terminado,
+            movimentacao.link_processo,
+            timestamp, camp,
+            processo, mes)
+
+        self.cursor.execute(query_update_processos)
+        self.connection.commit()
+
     def get_processo(self, campus, auxilio):
         if campus == "" or auxilio == "":
             return None
@@ -133,7 +175,3 @@ class ProcessoService:
         return MovimentacaoProcessoDTO(processo[0], processo[1],
                                        processo[2], processo[3],
                                        processo[4], auxilio, campus)
-
-    def format_timezone(self):
-        utc_now = pytz.utc.localize(datetime.datetime.utcnow())
-        return utc_now.astimezone(pytz.timezone("America/Sao_Paulo"))
