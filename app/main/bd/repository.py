@@ -41,7 +41,7 @@ def create_table(cursor, connection):
             nome_visualizacao VARCHAR NOT NULL
         )
     """
-
+    cursor.execute("DROP TABLE processos")
     cursor.execute(query_create_table_processos)
     cursor.execute(query_create_table_campus)
     cursor.execute(query_create_table_auxilios)
