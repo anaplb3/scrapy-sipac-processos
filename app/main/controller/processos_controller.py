@@ -21,8 +21,27 @@ class Processo(Resource):
             processo = service.get_processo(campus, auxilio)
 
             if processo == None:
-                return jsonify({'data': "Campos inválidos."})
+                return jsonify({'response':
+                                {
+                                    'code': '404',
+                                    'message': 'Campos inválidos',
+                                    'body': None
+                                }
+                                })
 
-            return jsonify({'data': processo.serialize()})
+            return jsonify({'response':
+                            {
+                                'code': '200',
+                                'message': 'Auxílio encontrado com sucesso.',
+                                'body': processo.serialize()
+                            }
+                            })
+
         except Exception as e:
-            return jsonify({'data': "Algo deu errado. {}".format(str(e))})
+            return jsonify({'response':
+                            {
+                                'code': '500',
+                                'message': 'Algo deu errado. {}'.format(str(e)),
+                                'body': None
+                            }
+                            })
