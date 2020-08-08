@@ -34,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_insert(movimentacao, camp, processo, mes)
+                        self.execute_update(movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
                         "ProcessosServiceError in update_processos: {}".format(str(e)))
@@ -95,7 +95,7 @@ class ProcessoService:
             if movimentacao == None:
                 raise Exception
             else:
-                self.execute_insert(movimentacao, campus, processo, mes)
+                self.execute_update(movimentacao, campus, processo, mes)
         except Exception as e:
             print(
                 "ProcessosServiceError in auxilio_complementar_campus_III: {}".format(str(e)))
@@ -119,7 +119,7 @@ class ProcessoService:
                 if movimentacao == None:
                     continue
                 else:
-                    self.execute_insert(movimentacao, campus, processo, mes)
+                    self.execute_update(movimentacao, campus, processo, mes)
             except Exception as e:
                 print("ProcessosServiceError in auxilios_campus_I: {}".format(str(e)))
                 continue
