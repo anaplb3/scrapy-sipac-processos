@@ -18,4 +18,10 @@ class PopulandoBanco(Resource):
         if chave == cfg["chave_populando"]:
             service.update_processos()
         else:
-            return jsonify({'data': 'Chave incorreta'})
+            return jsonify({'response':
+                            {
+                                'code': '401',
+                                'message': 'Chave incorreta.',
+                                'body': None
+                            }
+                            })
