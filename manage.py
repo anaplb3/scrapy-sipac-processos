@@ -17,7 +17,7 @@ cfg = environment_config()
 
 cron = BackgroundScheduler(daemon=True, timezone='America/Sao_Paulo')
 cron.add_job(service.update_processos, 'cron', day_of_week=(
-    'mon-fri'), hour='7-16')
+    'mon-fri'), minute='0-59/30', hour='8-17')
 
 app.app_context().push()
 

@@ -1,10 +1,8 @@
-import datetime
+from datetime import datetime, timedelta
 import pytz
 from app.main.web_scrapy.sipac_selenium import open
 from app.main.web_scrapy.soupbib import get_processos
 from app.main.bd import repository
-from sched import scheduler
-from time import time, sleep
 import psycopg2
 from app.main.model.model import MovimentacaoProcessoDTO
 
@@ -23,8 +21,8 @@ class ProcessoService:
 
         for processo in processos:
             for camp in campus:
-                ano = datetime.datetime.now().year
-                mes = "{}/{}".format(self.find_month(processo, camp), ano)
+                ano = datetime.now().year
+                mes = "{}/{}".format(self.find_month_in_db(processo, camp), ano)
 
                 if self.auxilios_inexistentes(processo, camp):
                     continue
@@ -38,11 +36,13 @@ class ProcessoService:
                     else:
                         self.execute_update(movimentacao, camp, processo, mes)
                 except Exception as e:
-                    print("ProcessosServiceError: {}".format(str(e)))
+                    print(
+                        "ProcessosServiceError in update_processos: {}".format(str(e)))
                     continue
-        self.auxilios_campus_i()
+        self.auxilios_campus_I()
+        self.auxilio_complementar_campus_III()
 
-    def find_month(self, auxilio, campus):
+    def find_month_in_db(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
         self.cursor.execute(query)
@@ -66,14 +66,48 @@ class ProcessoService:
         else:
             return mes_referente
 
-    def auxilios_campus_i(self):
+    def get_next_update(self, timestamp):
+        br = pytz.timezone("America/Sao_Paulo")
+        minutes = 30
+
+        if ((timestamp.weekday() == 4) and (timestamp.hour >= 17) and (timestamp.minute >= 30)):
+            days = 3
+            tmp = timestamp + timedelta(days=days)
+            hours = 9
+            return br.localize(tmp - timedelta(hours=hours, minutes=30))
+
+        elif ((timestamp.hour == 17) and (timestamp.minute >= 30)):
+            timestamp = timestamp - timedelta(minutes=30)
+            hours = 15
+            return br.localize(timestamp + timedelta(hours=hours))
+
+        return br.localize(timestamp + timedelta(minutes=minutes))
+
+    def auxilio_complementar_campus_III(self):
+        processo = "auxilio_emergencial_complementar"
+        campus = "III"
+        ano = datetime.now().year
+        mes = "{}/{}".format(self.find_month_in_db(processo, campus), ano)
+        try:
+            resultados_selenium = open(processo, campus, mes)
+            movimentacao = get_processos(
+                resultados_selenium[0], resultados_selenium[1])
+            if movimentacao == None:
+                raise Exception
+            else:
+                self.execute_update(movimentacao, campus, processo, mes)
+        except Exception as e:
+            print(
+                "ProcessosServiceError in auxilio_complementar_campus_III: {}".format(str(e)))
+
+    def auxilios_campus_I(self):
         processos = ["auxilio_residencia_rumf",
                      "auxilio_residencia_rufet", "auxilio_residentes"]
         campus = "I"
-        ano = datetime.datetime.now().year
+        ano = datetime.now().year
 
         for processo in processos:
-            mes = "{}/{}".format(self.find_month(processo, campus), ano)
+            mes = "{}/{}".format(self.find_month_in_db(processo, campus), ano)
 
             try:
                 if processo == "auxilio_residentes":
@@ -87,7 +121,7 @@ class ProcessoService:
                 else:
                     self.execute_update(movimentacao, campus, processo, mes)
             except Exception as e:
-                print("ProcessosServiceError: {}".format(str(e)))
+                print("ProcessosServiceError in auxilios_campus_I: {}".format(str(e)))
                 continue
 
     def auxilios_inexistentes(self, auxilio, camp):
@@ -97,7 +131,8 @@ class ProcessoService:
             return False
 
     def execute_update(self, movimentacao, camp, processo, mes):
-        timestamp = self.format_timezone()
+        timestamp = datetime.today()
+        proxima_atualizacao = self.get_next_update(timestamp)
         query_update_processos = """
             UPDATE processos
             SET unidade_destino = '{}',
@@ -105,6 +140,7 @@ class ProcessoService:
             status_terminado = '{}',
             link_processo = '{}',
             atualizado_em = '{}',
+            proxima_atualizacao_em = '{}',
             campus = '{}',
             tipo_processo = '{}',
             mes_referente = '{}'
@@ -114,9 +150,38 @@ class ProcessoService:
             movimentacao.recebido_em,
             movimentacao.status_terminado,
             movimentacao.link_processo,
-            timestamp, camp,
+            timestamp, proxima_atualizacao,
+            camp,
             processo, mes,
             processo, camp)
+
+        self.cursor.execute(query_update_processos)
+        self.connection.commit()
+
+    def execute_insert(self, movimentacao, camp, processo, mes):
+        timestamp = datetime.today()
+        proxima_atualizacao = self.get_next_update(timestamp)
+        query_update_processos = """
+            INSERT INTO processos(
+            unidade_destino,
+            recebido_em,
+            status_terminado,
+            link_processo,
+            atualizado_em,
+            proxima_atualizacao_em,
+            campus,
+            tipo_processo,
+            mes_referente
+            )
+            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
+            """.format(
+            movimentacao.unidade_destino,
+            movimentacao.recebido_em,
+            movimentacao.status_terminado,
+            movimentacao.link_processo,
+            timestamp, proxima_atualizacao,
+            camp,
+            processo, mes)
 
         self.cursor.execute(query_update_processos)
         self.connection.commit()
@@ -125,15 +190,14 @@ class ProcessoService:
         if campus == "" or auxilio == "":
             return None
         query = """SELECT unidade_destino, recebido_em, 
-        status_terminado, link_processo, atualizado_em FROM processos 
+        status_terminado, link_processo, atualizado_em, proxima_atualizacao_em,
+        mes_referente FROM processos 
         WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
         self.cursor.execute(query)
         processo = list(self.cursor.fetchone())
 
         return MovimentacaoProcessoDTO(processo[0], processo[1],
                                        processo[2], processo[3],
-                                       processo[4], auxilio, campus)
-
-    def format_timezone(self):
-        utc_now = pytz.utc.localize(datetime.datetime.utcnow())
-        return utc_now.astimezone(pytz.timezone("America/Sao_Paulo"))
+                                       processo[4], processo[5],
+                                       auxilio, campus,
+                                       processo[6])

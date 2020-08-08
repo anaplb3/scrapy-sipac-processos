@@ -20,6 +20,8 @@ def find_tipo_processo(tipo_processo, campus):
         return "RUFET"
     elif tipo_processo == "auxilio_residentes":
         return "RESIDENTES"
+    elif tipo_processo == "auxilio_emergencial_complementar":
+        return "ALIMENTAÇÃO COMPLEMENTAR"
 
 
 def setting_selenium():
@@ -63,6 +65,7 @@ def open(tipo_processo, campus, mes):
     achou = True
     while(achou):
         if index >= 10:
+            print("index maior que 10. parando de buscar.")
             return None
         time.sleep(1)
         table = driver.find_element(By.CLASS_NAME, "listagem")

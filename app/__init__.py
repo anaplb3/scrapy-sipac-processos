@@ -1,6 +1,7 @@
 from app.main.controller.processos_controller import api as processo_namespace
 from app.main.controller.keepalive_controller import api as keepalive_namespace
 from app.main.controller.populando_banco_controller import api as populando_namespace
+from app.main.controller.campus_controller import api as campus_namespace
 from flask import Flask, Blueprint, url_for
 from flask_restx import Api, Resource, apidoc
 
@@ -8,6 +9,11 @@ url_prefix = "/api/v1"
 
 
 class MyCustomApi(Api):
+    @property
+    def specs_url(self):
+        """Monkey patch for HTTPS"""
+        scheme = 'http' if '5000' in self.base_url else 'https'
+        return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
 
     def _register_apidoc(self, app: Flask) -> None:
         conf = app.extensions.setdefault('restplus', {})
@@ -31,3 +37,4 @@ api = MyCustomApi(blueprint, version='1.0', doc="/docs")
 api.add_namespace(processo_namespace, path="/processos")
 api.add_namespace(keepalive_namespace, path="/keepalive")
 api.add_namespace(populando_namespace, path="/populando")
+api.add_namespace(campus_namespace, path="/campus")

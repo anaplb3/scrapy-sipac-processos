@@ -9,8 +9,8 @@ service = ProcessoService()
 
 @api.route("")
 @api.doc(params={
-    "auxilio": "Tipo de auxílio (auxilio_emergencial, auxilio_alimentacao_res, auxilio_alimentacao, auxilio_moradia)",
-    "campus": "Campus da UFPB referente ao auxílio (I, II, III, IV)"
+    "auxilio": "Tipo de auxílio (auxilio_emergencial, auxilio_alimentacao_residencia, auxilio_alimentacao, auxilio_moradia, auxilio_residencia_rumf, auxilio_residencia_rufet, auxilio_residentes)",
+    "campus": "Campus da UFPB referente ao auxílio (I, MANGABEIRA, II, III, IV)"
 })
 class Processo(Resource):
     def get(self):
@@ -21,8 +21,27 @@ class Processo(Resource):
             processo = service.get_processo(campus, auxilio)
 
             if processo == None:
-                return jsonify({'data': "Campos inválidos."})
+                return jsonify({'response':
+                                {
+                                    'code': '404',
+                                    'message': 'Campos inválidos',
+                                    'body': None
+                                }
+                                })
 
-            return jsonify({'data': processo.serialize()})
+            return jsonify({'response':
+                            {
+                                'code': '200',
+                                'message': 'Auxílio encontrado com sucesso.',
+                                'body': processo.serialize()
+                            }
+                            })
+
         except Exception as e:
-            return jsonify({'data': "Algo deu errado. {}".format(str(e))})
+            return jsonify({'response':
+                            {
+                                'code': '500',
+                                'message': 'Algo deu errado. {}'.format(str(e)),
+                                'body': None
+                            }
+                            })

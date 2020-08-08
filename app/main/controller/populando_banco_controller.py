@@ -3,7 +3,8 @@ from flask_restx import Resource, Namespace, fields
 from app.main.service.processos_service import ProcessoService
 from app.main.bd.repository import environment_config, init_bd
 
-api = Namespace('Populando banco', "Popular o banco.")
+api = Namespace('Populando banco',
+                "Endpoint para popular o banco. Usada apenas para desenvolvimento.")
 
 service = ProcessoService()
 
@@ -17,4 +18,10 @@ class PopulandoBanco(Resource):
         if chave == cfg["chave_populando"]:
             service.update_processos()
         else:
-            return jsonify({'data': 'Chave incorreta'})
+            return jsonify({'response':
+                            {
+                                'code': '401',
+                                'message': 'Chave incorreta.',
+                                'body': None
+                            }
+                            })
