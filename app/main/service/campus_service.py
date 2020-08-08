@@ -29,7 +29,10 @@ class CampusService:
         FROM auxilios
         WHERE id_campus = {}
         """.format(id)
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except:
+            self.cursor.rollback()
 
         auxilios_list = list(self.cursor.fetchall())
         auxilios_dto_list = []
