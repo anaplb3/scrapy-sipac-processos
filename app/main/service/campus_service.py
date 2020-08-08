@@ -14,7 +14,11 @@ class CampusService:
         query = """SELECT id_campus, campus
         FROM campus
         """
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except:
+            self.cursor.rollback()
+            return None
         campus_list = list(self.cursor.fetchall())
 
         campus_dto_list = []
@@ -33,6 +37,7 @@ class CampusService:
             self.cursor.execute(query)
         except:
             self.cursor.rollback()
+            return None
 
         auxilios_list = list(self.cursor.fetchall())
         auxilios_dto_list = []

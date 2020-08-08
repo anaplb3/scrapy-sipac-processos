@@ -193,7 +193,11 @@ class ProcessoService:
         status_terminado, link_processo, atualizado_em, proxima_atualizacao_em,
         mes_referente FROM processos 
         WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except:
+            self.cursor.rollback()
+            return None
         processo = list(self.cursor.fetchone())
 
         return MovimentacaoProcessoDTO(processo[0], processo[1],
