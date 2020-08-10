@@ -50,8 +50,8 @@ class ProcessoService:
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
             if auxilio == "auxilio_emergencial":
-                return "Julho"
-            return "Agosto"
+                return "Agosto"
+            return "Setembro"
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
@@ -62,7 +62,10 @@ class ProcessoService:
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
         index = months.index(mes_referente)
         if status:
-            return months[index + 1]
+            try:
+                return months[index + 1]
+            except:
+                return months[0]
         else:
             return mes_referente
 
@@ -154,8 +157,11 @@ class ProcessoService:
             camp,
             processo, mes,
             processo, camp)
-
-        self.cursor.execute(query_update_processos)
+        try:
+            self.cursor.execute(query_update_processos)
+        except Exception as e:
+            print("query in execute_update: {}".format(query))
+            print("ProcessoServiceError in execute_update: {}".format(str(e)))
         self.connection.commit()
 
     def execute_insert(self, movimentacao, camp, processo, mes):
@@ -195,9 +201,12 @@ class ProcessoService:
         WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
         try:
             self.cursor.execute(query)
-        except:
-            self.cursor.rollback()
-            return None
+        except Exception as e:
+            print("query in get_processo: {}".format(query))
+            print("ProcessosServiceError in get_processo: {}. Tentando novamente.".format(
+                str(e)))
+            self.connection.rollback()
+            self.cursor.execute(query)
         processo = list(self.cursor.fetchone())
 
         return MovimentacaoProcessoDTO(processo[0], processo[1],

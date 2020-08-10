@@ -15,7 +15,7 @@ class CampusList(Resource):
         '''
         campus = service.get_all_campus()
 
-        if campus == None:
+        if campus == None or len(campus) == 0:
             return jsonify({'response':
                             {
                                 'code': '503',
@@ -43,7 +43,7 @@ class Auxilios(Resource):
 
         auxilios = service.get_auxilios_from_id(id)
 
-        if auxilios == None:
+        if auxilios == None or len(auxilios) == 0:
             return jsonify({'response':
                             {
                                 'code': '404',
