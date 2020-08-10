@@ -27,7 +27,7 @@ manager = Manager(app)
 @manager.command
 def run():
     init_bd()
-    """ cron.start() """
+    cron.start()
     port = cfg["port"]
     app.run(host=cfg["host"], port=port, debug=cfg["debug"])
 

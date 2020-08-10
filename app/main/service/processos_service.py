@@ -16,7 +16,7 @@ class ProcessoService:
 
     def update_processos(self):
         processos = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                     "auxilio_alimentacao", "auxilio_moradia"]
+                     "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
         campus = ["I", "II", "III", "IV"]
 
         for processo in processos:
@@ -49,7 +49,7 @@ class ProcessoService:
 
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
-            if auxilio == "auxilio_emergencial":
+            if auxilio == "auxilio_emergencial" or "auxilio_emergencial_complementar":
                 return "Agosto"
             return "Setembro"
         else:
