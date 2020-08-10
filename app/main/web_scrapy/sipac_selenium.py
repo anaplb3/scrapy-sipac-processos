@@ -22,6 +22,8 @@ def find_tipo_processo(tipo_processo, campus):
         return "RESIDENTES"
     elif tipo_processo == "auxilio_emergencial_complementar":
         return "ALIMENTAÇÃO COMPLEMENTAR"
+    elif tipo_processo == "auxilio_creche":
+        return "CRECHE"
 
 
 def setting_selenium():
@@ -90,7 +92,12 @@ def find_auxilio(assunto, auxilio, campus, mes):
     if auxilio == "ALIMENTAÇÃO":
         is_auxilio = (auxilio in assunto) and (
             "EMERGENCIAL" not in assunto) and ("RESIDENTES" not in assunto)
-    is_campus = find_campus(assunto, campus)
+
+    if auxilio == "CRECHE":
+        is_campus = True
+    else:
+        is_campus = find_campus(assunto, campus)
+
     is_mes = mes in assunto
     return is_auxilio and is_campus and is_mes
 
