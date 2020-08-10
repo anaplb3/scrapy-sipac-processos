@@ -76,14 +76,14 @@ def get_campus_id(cursor, campus):
 
 def insert_auxilios_values(cursor, connection):
     processos_campus_I = ["auxilio_emergencial", "auxilio_alimentacao", "auxilio_moradia", "auxilio_residencia_rumf",
-                          "auxilio_residencia_rufet"]
+                          "auxilio_residencia_rufet", "auxilio_creche"]
     processos_campus_II = ["auxilio_emergencial",
-                           "auxilio_alimentacao_residencia", "auxilio_moradia"]
+                           "auxilio_alimentacao_residencia", "auxilio_moradia", "auxilio_creche"]
     processos_campus_III = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                            "auxilio_moradia", "auxilio_emergencial_complementar"]
+                            "auxilio_moradia", "auxilio_emergencial_complementar", "auxilio_creche"]
     processos_campus_IV = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                           "auxilio_alimentacao", "auxilio_moradia"]
-    processo_campus_mangabeira = ["auxilio_residentes"]
+                           "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
+    processo_campus_mangabeira = ["auxilio_residentes", "auxilio_creche"]
 
     aaaaaa(cursor, processos_campus_I, "I")
     aaaaaa(cursor, processos_campus_II, "II")
@@ -119,6 +119,8 @@ def get_visualization_name(auxilio):
         return "Aux. Alimentação Residentes Mangabeira e Santa Rita"
     elif (auxilio == 'auxilio_emergencial_complementar'):
         return "Pecúnia Emergencial Alimentação Complementar"
+    elif (auxilio == '"auxilio_creche"'):
+        return "Aux. Creche"
 
 
 def init_bd():
