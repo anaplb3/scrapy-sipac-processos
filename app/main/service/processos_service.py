@@ -34,12 +34,8 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        if processo == 'auxilio_creche':
-                            self.execute_insert(
-                                movimentacao, camp, processo, mes)
-                        else:
-                            self.execute_update(
-                                movimentacao, camp, processo, mes)
+                        self.execute_update(
+                            movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
                         "ProcessosServiceError in update_processos: {}".format(str(e)))
@@ -78,15 +74,14 @@ class ProcessoService:
         br = pytz.timezone("America/Sao_Paulo")
         minutes = 30
 
-        if ((timestamp.weekday() == 4) and (timestamp.hour >= 17) and (timestamp.minute >= 30)):
+        if ((timestamp.weekday() == 4) and ((timestamp.hour - 3) >= 17) and (timestamp.minute >= 30)):
             days = 3
             tmp = timestamp + timedelta(days=days)
             hours = 9
             return br.localize(tmp - timedelta(hours=hours, minutes=30))
 
-        elif ((timestamp.hour == 17) and (timestamp.minute >= 30)):
-            timestamp = timestamp - timedelta(minutes=30)
-            hours = 15
+        elif ((timestamp.hour - 3) == 18):
+            hours = 14
             return br.localize(timestamp + timedelta(hours=hours))
 
         return br.localize(timestamp + timedelta(minutes=minutes))
