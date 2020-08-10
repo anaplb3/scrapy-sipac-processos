@@ -34,7 +34,12 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_update(movimentacao, camp, processo, mes)
+                        if processo == 'auxilio_creche':
+                            self.execute_insert(
+                                movimentacao, camp, processo, mes)
+                        else:
+                            self.execute_update(
+                                movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
                         "ProcessosServiceError in update_processos: {}".format(str(e)))
