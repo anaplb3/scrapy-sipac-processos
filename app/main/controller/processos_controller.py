@@ -9,16 +9,16 @@ service = ProcessoService()
 
 @api.route("")
 @api.doc(params={
-    "auxilio": "Tipo de auxílio (auxilio_emergencial, auxilio_alimentacao_residencia, auxilio_alimentacao, auxilio_moradia, auxilio_residencia_rumf, auxilio_residencia_rufet, auxilio_residentes)",
-    "campus": "Campus da UFPB referente ao auxílio (I, MANGABEIRA, II, III, IV)"
+    "id_auxilio": "Id do auxílio",
+    "id_campus": "Id do campus"
 })
 class Processo(Resource):
     def get(self):
         try:
-            auxilio = request.args.get("auxilio", "", str)
-            campus = request.args.get("campus", "", str)
+            id_auxilio = request.args.get("id_auxilio", "", int)
+            id_campus = request.args.get("id_campus", "", int)
 
-            processo = service.get_processo(campus, auxilio)
+            processo = service.get_processo(id_campus, id_auxilio)
 
             if processo == None:
                 return jsonify({'response':

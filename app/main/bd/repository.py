@@ -13,7 +13,9 @@ def environment_config():
 def create_table(cursor, connection):
     query_create_table_processos = """
         CREATE TABLE IF NOT EXISTS processos(
-            id SERIAL PRIMARY KEY,
+            id_processo SERIAL PRIMARY KEY,
+            id_auxilio INTEGER REFERENCES auxilios(id_auxilio),
+            id_campus INTEGER REFERENCES campus(id_campus),
             unidade_destino VARCHAR NOT NULL,
             recebido_em VARCHAR NOT NULL,
             status_terminado BOOLEAN NOT NULL,
@@ -74,6 +76,15 @@ def get_campus_id(cursor, campus):
     return list(cursor.fetchone())[0]
 
 
+def get_auxilio_id(cursor, id_campus, tipo_auxilio):
+    query = """ SELECT id_auxilio 
+        FROM auxilios
+        WHERE id_campus = {} and tipo_auxilio = '{}'""".format(id_campus, tipo_auxilio)
+    cursor.execute(query)
+    res = cursor.fetchone()
+    return res[0]
+
+
 def insert_auxilios_values(cursor, connection):
     processos_campus_I = ["auxilio_emergencial", "auxilio_alimentacao", "auxilio_moradia", "auxilio_residencia_rumf",
                           "auxilio_residencia_rufet", "auxilio_creche"]
@@ -85,15 +96,15 @@ def insert_auxilios_values(cursor, connection):
                            "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
     processo_campus_mangabeira = ["auxilio_residentes", "auxilio_creche"]
 
-    aaaaaa(cursor, processos_campus_I, "I")
-    aaaaaa(cursor, processos_campus_II, "II")
-    aaaaaa(cursor, processos_campus_III, "III")
-    aaaaaa(cursor, processos_campus_IV, "IV")
-    aaaaaa(cursor, processo_campus_mangabeira, "MANGABEIRA")
+    insert_auxilio_value(cursor, processos_campus_I, "I")
+    insert_auxilio_value(cursor, processos_campus_II, "II")
+    insert_auxilio_value(cursor, processos_campus_III, "III")
+    insert_auxilio_value(cursor, processos_campus_IV, "IV")
+    insert_auxilio_value(cursor, processo_campus_mangabeira, "MANGABEIRA")
     connection.commit()
 
 
-def aaaaaa(cursor, auxilios, campus):
+def insert_auxilio_value(cursor, auxilios, campus):
     insert = """INSERT INTO auxilios (id_campus, tipo_auxilio, nome_visualizacao)
     VALUES ({}, '{}', '{}')"""
     for aux in auxilios:

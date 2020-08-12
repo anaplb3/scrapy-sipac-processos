@@ -34,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_update(
+                        self.execute_insert(
                             movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
@@ -98,7 +98,7 @@ class ProcessoService:
             if movimentacao == None:
                 raise Exception
             else:
-                self.execute_update(movimentacao, campus, processo, mes)
+                self.execute_insert(movimentacao, campus, processo, mes)
         except Exception as e:
             print(
                 "ProcessosServiceError in auxilio_complementar_campus_III: {}".format(str(e)))
@@ -122,7 +122,7 @@ class ProcessoService:
                 if movimentacao == None:
                     continue
                 else:
-                    self.execute_update(movimentacao, campus, processo, mes)
+                    self.execute_insert(movimentacao, campus, processo, mes)
             except Exception as e:
                 print("ProcessosServiceError in auxilios_campus_I: {}".format(str(e)))
                 continue
@@ -136,9 +136,13 @@ class ProcessoService:
     def execute_update(self, movimentacao, camp, processo, mes):
         timestamp = datetime.today()
         proxima_atualizacao = self.get_next_update(timestamp)
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(id_campus, processo)
         query_update_processos = """
             UPDATE processos
-            SET unidade_destino = '{}',
+            SET id_campus = {},
+            id_auxilio = {},
+            unidade_destino = '{}',
             recebido_em = '{}',
             status_terminado = '{}',
             link_processo = '{}',
@@ -149,6 +153,7 @@ class ProcessoService:
             mes_referente = '{}'
             WHERE tipo_processo = '{}' and campus = '{}'
             """.format(
+            id_campus, id_auxilio,
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
@@ -167,8 +172,13 @@ class ProcessoService:
     def execute_insert(self, movimentacao, camp, processo, mes):
         timestamp = datetime.today()
         proxima_atualizacao = self.get_next_update(timestamp)
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(
+            self.cursor, id_campus, processo)
         query_update_processos = """
             INSERT INTO processos(
+            id_campus,
+            id_auxilio,    
             unidade_destino,
             recebido_em,
             status_terminado,
@@ -179,8 +189,9 @@ class ProcessoService:
             tipo_processo,
             mes_referente
             )
-            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
+            VALUES ({}, {}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
             """.format(
+            id_campus, id_auxilio,
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
@@ -192,13 +203,13 @@ class ProcessoService:
         self.cursor.execute(query_update_processos)
         self.connection.commit()
 
-    def get_processo(self, campus, auxilio):
-        if campus == "" or auxilio == "":
+    def get_processo(self, id_campus, id_auxilio):
+        if id_campus == "" or id_auxilio == "":
             return None
         query = """SELECT unidade_destino, recebido_em, 
         status_terminado, link_processo, atualizado_em, proxima_atualizacao_em,
-        mes_referente FROM processos 
-        WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
+        tipo_processo, campus, mes_referente FROM processos 
+        WHERE id_campus = {} and id_auxilio = {} """.format(id_campus, id_auxilio)
         try:
             self.cursor.execute(query)
         except Exception as e:
@@ -212,5 +223,5 @@ class ProcessoService:
         return MovimentacaoProcessoDTO(processo[0], processo[1],
                                        processo[2], processo[3],
                                        processo[4], processo[5],
-                                       auxilio, campus,
-                                       processo[6])
+                                       processo[6], processo[7],
+                                       processo[8])
