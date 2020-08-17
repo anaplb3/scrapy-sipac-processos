@@ -66,9 +66,9 @@ def open(tipo_processo, campus, mes):
     index = 1
     achou = True
     while(achou):
-        if index >= 10:
+        """ if index >= 10:
             print("index maior que 10. parando de buscar.")
-            return None
+            return None """
         time.sleep(1)
         table = driver.find_element(By.CLASS_NAME, "listagem")
         rows = table.find_elements(By.TAG_NAME, "tr")
