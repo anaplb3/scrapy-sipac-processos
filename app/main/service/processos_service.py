@@ -34,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_insert(
+                        self.execute_update(
                             movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
@@ -51,8 +51,8 @@ class ProcessoService:
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
             if auxilio == "auxilio_emergencial" or auxilio == "auxilio_emergencial_complementar":
-                return "Julho"
-            return "Agosto"
+                return "Agosto"
+            return "Setembro"
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
@@ -98,7 +98,7 @@ class ProcessoService:
             if movimentacao == None:
                 raise Exception
             else:
-                self.execute_insert(movimentacao, campus, processo, mes)
+                self.execute_update(movimentacao, campus, processo, mes)
         except Exception as e:
             print(
                 "ProcessosServiceError in auxilio_complementar_campus_III: {}".format(str(e)))
@@ -122,7 +122,7 @@ class ProcessoService:
                 if movimentacao == None:
                     continue
                 else:
-                    self.execute_insert(movimentacao, campus, processo, mes)
+                    self.execute_update(movimentacao, campus, processo, mes)
             except Exception as e:
                 print("ProcessosServiceError in auxilios_campus_I: {}".format(str(e)))
                 continue
@@ -200,7 +200,7 @@ class ProcessoService:
         self.connection.commit()
 
         if movimentacao.status_terminado:
-            self.execute_insert_finished_process(
+            self.execute_update_finished_process(
                 movimentacao.link_processo, camp, processo, mes)
 
     def execute_update_finished_process(self, link_processo, camp, processo, mes):
