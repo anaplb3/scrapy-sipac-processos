@@ -44,9 +44,22 @@ def create_table(cursor, connection):
         )
     """
 
+    query_create_table_processos_anteriores = """
+        CREATE TABLE IF NOT EXISTS processos_anteriores (
+            id_auxilio_anterior SERIAL PRIMARY KEY,
+            id_auxilio INTEGER REFERENCES auxilios(id_auxilio),
+            id_campus INTEGER REFERENCES campus(id_campus),
+            link_processo VARCHAR NOT NULL,
+            campus VARCHAR NOT NULL,
+            tipo_processo VARCHAR NOT NULL,
+            mes_referente VARCHAR NOT NULL
+        )
+    """
+
     cursor.execute(query_create_table_processos)
     cursor.execute(query_create_table_campus)
     cursor.execute(query_create_table_auxilios)
+    cursor.execute(query_create_table_processos_anteriores)
     connection.commit()
 
 
