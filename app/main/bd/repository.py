@@ -56,9 +56,9 @@ def create_table(cursor, connection):
         )
     """
 
-    cursor.execute(query_create_table_processos)
     cursor.execute(query_create_table_campus)
     cursor.execute(query_create_table_auxilios)
+    cursor.execute(query_create_table_processos)
     cursor.execute(query_create_table_processos_anteriores)
     connection.commit()
 
