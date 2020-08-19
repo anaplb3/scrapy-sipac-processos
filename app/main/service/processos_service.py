@@ -144,6 +144,7 @@ class ProcessoService:
             SET unidade_destino = '{}',
             recebido_em = '{}',
             status_terminado = '{}',
+            link_processo = '{}',
             atualizado_em = '{}',
             proxima_atualizacao_em = '{}',
             mes_referente = '{}'
@@ -152,15 +153,17 @@ class ProcessoService:
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
+            movimentacao.link_processo,
             timestamp, proxima_atualizacao,
             mes,
             id_auxilio, id_campus)
         try:
             self.cursor.execute(query_update_processos)
+            self.connection.commit()
         except Exception as e:
             print("query in execute_update: {}".format(query))
             print("ProcessoServiceError in execute_update: {}".format(str(e)))
-        self.connection.commit()
+
         if movimentacao.status_terminado:
             self.execute_update_finished_process(
                 movimentacao.link_processo, camp, processo, mes)
