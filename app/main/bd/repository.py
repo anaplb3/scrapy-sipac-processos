@@ -143,7 +143,7 @@ def get_visualization_name(auxilio):
         return "Aux. Alimentação Residentes Mangabeira e Santa Rita"
     elif (auxilio == 'auxilio_emergencial_complementar'):
         return "Pecúnia Emergencial Alimentação Complementar"
-    elif (auxilio == '"auxilio_creche"'):
+    elif (auxilio == 'auxilio_creche'):
         return "Aux. Creche"
 
 
