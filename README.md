@@ -1,4 +1,16 @@
 # scrapy-sipac-processos
+<p align="center">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/anaplb3/scrapy-sipac-processos?color=%2304D361">
+
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/anaplb3/scrapy-sipac-processos">
+  
+  <a href="https://github.com/ghostdovahkiin/ecoleta/commits/master">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/anaplb3/scrapy-sipac-processos">
+  </a>
+   <a href="https://github.com/anaplb3/scrapy-sipac-processos/stargazers">
+    <img alt="Stargazers" src="https://img.shields.io/github/stars/anaplb3/scrapy-sipac-processos?style=social">
+  </a>
+</p>
 API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atualmente estão disponíveis os Campus I, MANGABEIRA, II, III, IV, e os auxílios:
 
  - Moradia ("auxilio_moradia")
