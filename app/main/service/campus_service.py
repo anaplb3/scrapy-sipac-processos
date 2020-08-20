@@ -14,7 +14,18 @@ class CampusService:
         query = """SELECT id_campus, campus
         FROM campus
         """
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except psycopg2.InterfaceError as exc:
+            print("query in get_all_campus: {}".format(query))
+            print("CampusServiceError in get_all_campus: {}".format(str(exc)))
+            self.connection = psycopg2.connect(
+                cfg["database_url"], sslmode=cfg["sslmode"])
+            self.cursor = self.connection.cursor()
+            self.cursor.execute(query)
+        except:
+            self.connection.rollback()
+            return None
         campus_list = list(self.cursor.fetchall())
 
         campus_dto_list = []
@@ -29,7 +40,18 @@ class CampusService:
         FROM auxilios
         WHERE id_campus = {}
         """.format(id)
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except psycopg2.InterfaceError as exc:
+            print("query in get_auxilios_from_id: {}".format(query))
+            print("CampusServiceError in get_auxilios_from_id: {}".format(str(exc)))
+            self.connection = psycopg2.connect(
+                cfg["database_url"], sslmode=cfg["sslmode"])
+            self.cursor = self.connection.cursor()
+            self.cursor.execute(query)
+        except:
+            self.connection.rollback()
+            return None
 
         auxilios_list = list(self.cursor.fetchall())
         auxilios_dto_list = []

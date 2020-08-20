@@ -4,7 +4,7 @@ from app.main.web_scrapy.sipac_selenium import open
 from app.main.web_scrapy.soupbib import get_processos
 from app.main.bd import repository
 import psycopg2
-from app.main.model.model import MovimentacaoProcessoDTO
+from app.main.model.model import MovimentacaoProcessoDTO, MovimentacaoAnteriorDTO
 
 
 class ProcessoService:
@@ -16,7 +16,7 @@ class ProcessoService:
 
     def update_processos(self):
         processos = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                     "auxilio_alimentacao", "auxilio_moradia"]
+                     "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
         campus = ["I", "II", "III", "IV"]
 
         for processo in processos:
@@ -34,7 +34,8 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_update(movimentacao, camp, processo, mes)
+                        self.execute_update(
+                            movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
                         "ProcessosServiceError in update_processos: {}".format(str(e)))
@@ -49,9 +50,9 @@ class ProcessoService:
 
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
-            if auxilio == "auxilio_emergencial":
-                return "Julho"
-            return "Agosto"
+            if auxilio == "auxilio_emergencial" or auxilio == "auxilio_emergencial_complementar":
+                return "Agosto"
+            return "Setembro"
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
@@ -62,7 +63,10 @@ class ProcessoService:
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
         index = months.index(mes_referente)
         if status:
-            return months[index + 1]
+            try:
+                return months[index + 1]
+            except:
+                return months[0]
         else:
             return mes_referente
 
@@ -70,15 +74,14 @@ class ProcessoService:
         br = pytz.timezone("America/Sao_Paulo")
         minutes = 30
 
-        if ((timestamp.weekday() == 4) and (timestamp.hour >= 17) and (timestamp.minute >= 30)):
+        if ((timestamp.weekday() == 4) and ((timestamp.hour - 3) >= 17) and (timestamp.minute >= 30)):
             days = 3
             tmp = timestamp + timedelta(days=days)
             hours = 9
             return br.localize(tmp - timedelta(hours=hours, minutes=30))
 
-        elif ((timestamp.hour == 17) and (timestamp.minute >= 30)):
-            timestamp = timestamp - timedelta(minutes=30)
-            hours = 15
+        elif ((timestamp.hour - 3) == 18):
+            hours = 14
             return br.localize(timestamp + timedelta(hours=hours))
 
         return br.localize(timestamp + timedelta(minutes=minutes))
@@ -133,6 +136,9 @@ class ProcessoService:
     def execute_update(self, movimentacao, camp, processo, mes):
         timestamp = datetime.today()
         proxima_atualizacao = self.get_next_update(timestamp)
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(
+            self.cursor, id_campus, processo)
         query_update_processos = """
             UPDATE processos
             SET unidade_destino = '{}',
@@ -141,28 +147,37 @@ class ProcessoService:
             link_processo = '{}',
             atualizado_em = '{}',
             proxima_atualizacao_em = '{}',
-            campus = '{}',
-            tipo_processo = '{}',
             mes_referente = '{}'
-            WHERE tipo_processo = '{}' and campus = '{}'
+            WHERE id_auxilio = {} and id_campus = {}
             """.format(
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
             movimentacao.link_processo,
             timestamp, proxima_atualizacao,
-            camp,
-            processo, mes,
-            processo, camp)
+            mes,
+            id_auxilio, id_campus)
+        try:
+            self.cursor.execute(query_update_processos)
+            self.connection.commit()
+        except Exception as e:
+            print("query in execute_update: {}".format(query))
+            print("ProcessoServiceError in execute_update: {}".format(str(e)))
 
-        self.cursor.execute(query_update_processos)
-        self.connection.commit()
+        if movimentacao.status_terminado:
+            self.execute_update_finished_process(
+                movimentacao.link_processo, camp, processo, mes)
 
     def execute_insert(self, movimentacao, camp, processo, mes):
         timestamp = datetime.today()
         proxima_atualizacao = self.get_next_update(timestamp)
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(
+            self.cursor, id_campus, processo)
         query_update_processos = """
             INSERT INTO processos(
+            id_campus,
+            id_auxilio,    
             unidade_destino,
             recebido_em,
             status_terminado,
@@ -173,8 +188,9 @@ class ProcessoService:
             tipo_processo,
             mes_referente
             )
-            VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
+            VALUES ({}, {}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
             """.format(
+            id_campus, id_auxilio,
             movimentacao.unidade_destino,
             movimentacao.recebido_em,
             movimentacao.status_terminado,
@@ -186,18 +202,80 @@ class ProcessoService:
         self.cursor.execute(query_update_processos)
         self.connection.commit()
 
-    def get_processo(self, campus, auxilio):
-        if campus == "" or auxilio == "":
+        if movimentacao.status_terminado:
+            self.execute_update_finished_process(
+                movimentacao.link_processo, camp, processo, mes)
+
+    def execute_update_finished_process(self, link_processo, camp, processo, mes):
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(id_campus, processo)
+        query_update_finished_process = """
+            UPDATE processos_anteriores 
+            SET link_processo = '{}',
+            mes_referente = '{}'
+            WHERE id_auxilio = {} AND id_campus = {}
+        """.format(link_processo, mes, id_auxilio, id_campus)
+        self.cursor.execute(query_update_finished_process)
+        self.connection.commit()
+
+    def execute_insert_finished_process(self, link_processo, camp, processo, mes):
+        id_campus = repository.get_campus_id(self.cursor, camp)
+        id_auxilio = repository.get_auxilio_id(
+            self.cursor, id_campus, processo)
+        query_insert_finished_process = """
+            INSERT INTO processos_anteriores(
+                id_auxilio,
+                id_campus,
+                link_processo,
+                campus, tipo_processo,
+                mes_referente
+            )
+            VALUES ({}, {}, '{}', '{}', '{}', '{}')
+        """.format(id_auxilio, id_campus, link_processo, camp, processo, mes)
+        self.cursor.execute(query_insert_finished_process)
+        self.connection.commit()
+
+    def get_processo(self, id_campus, id_auxilio):
+        if id_campus == "" or id_auxilio == "":
             return None
         query = """SELECT unidade_destino, recebido_em, 
         status_terminado, link_processo, atualizado_em, proxima_atualizacao_em,
-        mes_referente FROM processos 
-        WHERE tipo_processo = '{}' and campus = '{}' """.format(auxilio, campus)
-        self.cursor.execute(query)
+        tipo_processo, campus, mes_referente FROM processos 
+        WHERE id_campus = {} and id_auxilio = {} """.format(id_campus, id_auxilio)
+        try:
+            self.cursor.execute(query)
+        except Exception as e:
+            print("query in get_processo: {}".format(query))
+            print("ProcessosServiceError in get_processo: {}. Tentando novamente.".format(
+                str(e)))
+            self.connection.rollback()
+            self.cursor.execute(query)
         processo = list(self.cursor.fetchone())
 
         return MovimentacaoProcessoDTO(processo[0], processo[1],
                                        processo[2], processo[3],
                                        processo[4], processo[5],
-                                       auxilio, campus,
-                                       processo[6])
+                                       processo[6], processo[7],
+                                       processo[8])
+
+    def get_processo_anterior(self, id_campus, id_auxilio):
+        if id_campus == "" or id_auxilio == "":
+            return None
+        query = """SELECT link_processo, campus, 
+        tipo_processo, mes_referente 
+        FROM processos_anteriores 
+        WHERE id_campus = {} and id_auxilio = {} """.format(id_campus, id_auxilio)
+
+        try:
+            self.cursor.execute(query)
+        except Exception as e:
+            print("query in get_processo: {}".format(query))
+            print("ProcessosServiceError in get_processo: {}. Tentando novamente.".format(
+                str(e)))
+            self.connection.rollback()
+            self.cursor.execute(query)
+        processo = list(self.cursor.fetchone())
+
+        return MovimentacaoAnteriorDTO(id_auxilio, id_campus,
+                                       processo[0], processo[1],
+                                       processo[2], processo[3])

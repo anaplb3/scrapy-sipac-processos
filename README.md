@@ -27,7 +27,7 @@ API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atual
 Os dados estão disponíveis para visualização [aqui](https://consultaprocessosipac.herokuapp.com/api/v1/docs). Para o GET é necessário enviar na url os parâmetros no formato abaixo:
 
     
-    /processos?auxilio=auxilio_moradia&campus=IV
+    /processos?auxilio={id_auxilio}&campus={id_campus}
     
 o que retorna um objeto com os seguintes atributos:
 
@@ -47,7 +47,7 @@ o que retorna um objeto com os seguintes atributos:
         "code": "200",
         "message": "Auxílio encontrado com sucesso."
     }
-}
+    }
 	    
       
 Como a API ainda está em desenvolvimento haverá mudanças.

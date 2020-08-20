@@ -2,7 +2,8 @@ from flask import jsonify, request, Flask
 from flask_restx import Resource, Namespace, fields
 from app.main.service.processos_service import ProcessoService
 
-api = Namespace('Processo', "GET para os processos dos auxílios.")
+api = Namespace('Processos Anteriores',
+                "GET para os processos dos auxílios do mês anterior.")
 
 service = ProcessoService()
 
@@ -18,7 +19,7 @@ class Processo(Resource):
             id_auxilio = request.args.get("id_auxilio", "", int)
             id_campus = request.args.get("id_campus", "", int)
 
-            processo = service.get_processo(id_campus, id_auxilio)
+            processo = service.get_processo_anterior(id_campus, id_auxilio)
 
             if processo == None:
                 return jsonify({'response':

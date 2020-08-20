@@ -66,3 +66,23 @@ class AuxilioDTO(object):
             'tipo_auxilio': self.tipo_auxilio,
             'nome_visualizacao': self.nome_visualizacao
         }
+
+
+class MovimentacaoAnteriorDTO(object):
+    def __init__(self, id_auxilio, id_campus, link_processo, campus, tipo_processo, mes_referente):
+        self.id_auxilio = id_auxilio
+        self.id_campus = id_campus
+        self.link_processo = link_processo
+        self.campus = campus
+        self.tipo_processo = tipo_processo
+        self.mes_referente = mes_referente
+
+    def serialize(self):
+        return {
+            'id_auxilio': self.id_auxilio,
+            'id_campus': self.id_campus,
+            'link_processo': self.link_processo,
+            'tipo_processo': self.tipo_processo,
+            'campus': self.campus,
+            'mes_referente': self.mes_referente
+        }
