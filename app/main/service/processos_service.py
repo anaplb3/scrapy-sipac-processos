@@ -208,7 +208,7 @@ class ProcessoService:
 
     def execute_update_finished_process(self, link_processo, camp, processo, mes):
         id_campus = repository.get_campus_id(self.cursor, camp)
-        id_auxilio = repository.get_auxilio_id(id_campus, processo)
+        id_auxilio = repository.get_auxilio_id(self.cursor, id_campus, processo)
         query_update_finished_process = """
             UPDATE processos_anteriores 
             SET link_processo = '{}',
