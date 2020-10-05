@@ -161,7 +161,7 @@ class ProcessoService:
             self.cursor.execute(query_update_processos)
             self.connection.commit()
         except Exception as e:
-            print("query in execute_update: {}".format(query))
+            print("query in execute_update: {}".format(query_update_processos))
             print("ProcessoServiceError in execute_update: {}".format(str(e)))
 
         if movimentacao.status_terminado:
