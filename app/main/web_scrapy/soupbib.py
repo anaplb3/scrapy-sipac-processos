@@ -16,26 +16,21 @@ def get_processos(html_content, url):
     movimentacoes = table.find_all('tr')
 
     # Aqui é pego o último table data da lista, correspondente a última movimentação
-    ultima_movimentacao_td = []
+    ultima_movimentacao = movimentacoes[len(movimentacoes) - 1].find_all('td')
+    ultima_movimentacao_copy = []
+    
+    for moma in ultima_movimentacao:
 
-    ultima_movimentacao_td.extend(
-        i.prettify() for i in movimentacoes[len(movimentacoes) - 1].find_all('td'))
+        # Caso tenha um despacho, é pego a penúltima movimentação que contém os dados necessários
+        if 'Despacho Informativo' in moma.text:
+            ultima_movimentacao_copy =  movimentacoes[len(movimentacoes) - 3].find_all('td')
+            break
 
-    despacho = '<td nowrap="nowrap" width="10%">\n <a href="/public/jsp/processos/despacho_processo.jsf?idDespacho=264388">\n  <img alt="Visualizar Despacho" border="0" src="/sipac/img_css/geral/lupa.gif" title="Visualizar Despacho"/>\n </a>\n</td>\n'
+    if ultima_movimentacao_copy:
+        ultima_movimentacao = ultima_movimentacao_copy
 
-    # Aqui é verificado se a última movimentação é um despacho, o que não é relevante para o sistema. Logo, é obtido a penúltima movimentação
-    try:
-        if ultima_movimentacao_td.index(despacho) > 0:
-            ultima_movimentacao_td.clear()
-            ultima_movimentacao_td.extend(
-                i.prettify() for i in movimentacoes[len(movimentacoes) - 3].find_all('td'))
-    except:
-        pass
-
-    unidade_destino = ultima_movimentacao_td[2].replace(
-        "<td>", "").replace("\n", "").replace("</td>", "")
-    recebido_em = ultima_movimentacao_td[4].replace(
-        "<td>", "").replace("\n", "").replace("</td>", "")
+    unidade_destino = ultima_movimentacao[2].text
+    recebido_em = ultima_movimentacao[4].text
     status_terminado = "PRA - ARQUIVO DA DAF" in unidade_destino
 
     return MovimentacaoProcesso(unidade_destino, recebido_em, status_terminado, url)
