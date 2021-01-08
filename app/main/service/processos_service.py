@@ -22,7 +22,10 @@ class ProcessoService:
         for processo in processos:
             for camp in campus:
                 ano = datetime.now().year
-                mes = "{}/{}".format(self.find_month_in_db(processo, camp), ano)
+                mesBD = self.find_month_in_db(processo, camp)
+                if (mes == "Dezembro"):
+                    ano = "2020"
+                mes = "{}/{}".format(mesBD, ano)
 
                 if self.auxilios_inexistentes(processo, camp):
                     continue
