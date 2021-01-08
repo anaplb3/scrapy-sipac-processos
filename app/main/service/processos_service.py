@@ -9,9 +9,9 @@ from app.main.model.model import MovimentacaoProcessoDTO, MovimentacaoAnteriorDT
 
 class ProcessoService:
     def __init__(self):
-        cfg = repository.environment_config()
+        self.cfg = repository.environment_config()
         self.connection = psycopg2.connect(
-            cfg["database_url"], sslmode=cfg["sslmode"])
+            self.cfg["database_url"], sslmode=self.cfg["sslmode"])
         self.cursor = self.connection.cursor()
 
     def update_processos(self):

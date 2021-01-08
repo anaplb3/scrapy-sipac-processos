@@ -5,9 +5,9 @@ from app.main.model.model import CampusDTO, AuxilioDTO
 
 class CampusService:
     def __init__(self):
-        cfg = repository.environment_config()
+        self.cfg = repository.environment_config()
         self.connection = psycopg2.connect(
-            cfg["database_url"], sslmode=cfg["sslmode"])
+            self.cfg["database_url"], sslmode=self.cfg["sslmode"])
         self.cursor = self.connection.cursor()
 
     def get_all_campus(self):
@@ -20,7 +20,7 @@ class CampusService:
             print("query in get_all_campus: {}".format(query))
             print("CampusServiceError in get_all_campus: {}".format(str(exc)))
             self.connection = psycopg2.connect(
-                cfg["database_url"], sslmode=cfg["sslmode"])
+                self.cfg["database_url"], sslmode=self.cfg["sslmode"])
             self.cursor = self.connection.cursor()
             self.cursor.execute(query)
         except:
@@ -46,7 +46,7 @@ class CampusService:
             print("query in get_auxilios_from_id: {}".format(query))
             print("CampusServiceError in get_auxilios_from_id: {}".format(str(exc)))
             self.connection = psycopg2.connect(
-                cfg["database_url"], sslmode=cfg["sslmode"])
+                self.cfg["database_url"], sslmode=self.cfg["sslmode"])
             self.cursor = self.connection.cursor()
             self.cursor.execute(query)
         except:
