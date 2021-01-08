@@ -23,7 +23,7 @@ class ProcessoService:
             for camp in campus:
                 ano = datetime.now().year
                 mesBD = self.find_month_in_db(processo, camp)
-                if (mes == "Dezembro"):
+                if (mesBD == "Dezembro"):
                     ano = "2020"
                 mes = "{}/{}".format(mesBD, ano)
 
