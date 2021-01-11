@@ -21,11 +21,7 @@ class ProcessoService:
 
         for processo in processos:
             for camp in campus:
-                ano = datetime.now().year
-                mesBD = self.find_month_in_db(processo, camp)
-                if (mesBD == "Dezembro"):
-                    ano = "2020"
-                mes = "{}/{}".format(mesBD, ano)
+                mes = self.get_referring_date_in_db(processo, camp)
 
                 if self.auxilios_inexistentes(processo, camp):
                     continue
@@ -46,7 +42,7 @@ class ProcessoService:
         self.auxilios_campus_I()
         self.auxilio_complementar_campus_III()
 
-    def find_month_in_db(self, auxilio, campus):
+    def get_referring_date_in_db(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
         WHERE tipo_processo = '{}' AND campus = '{}'""".format(auxilio, campus)
         self.cursor.execute(query)
@@ -59,19 +55,27 @@ class ProcessoService:
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
-            return self.get_month(status, mes_referente)
+            ano_referente = resultado[0][1].split("/")[1]
+            return self.get_date(status, mes_referente, ano_referente)
 
-    def get_month(self, status, mes_referente):
+    def get_date(self, status, mes_referente, ano_referente):
         months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
         index = months.index(mes_referente)
+        novo_mes_referente = mes_referente
         if status:
             try:
-                return months[index + 1]
+                novo_mes_referente = months[index + 1]
             except:
-                return months[0]
+                novo_mes_referente = months[0]
+
+        actual_year = datetime.now().year
+        if (novo_mes_referente == "Dezembro" and actual_year != ano_referente):
+            ano_referente = ano_referente
         else:
-            return mes_referente
+            ano_referente = datetime.now().year
+        
+        return "{}/{}".format(novo_mes_referente, ano_referente)
 
     def get_next_update(self, timestamp):
         br = pytz.timezone("America/Sao_Paulo")
@@ -92,8 +96,7 @@ class ProcessoService:
     def auxilio_complementar_campus_III(self):
         processo = "auxilio_emergencial_complementar"
         campus = "III"
-        ano = datetime.now().year
-        mes = "{}/{}".format(self.find_month_in_db(processo, campus), ano)
+        mes = self.get_referring_date_in_db(processo, campus)
         try:
             resultados_selenium = open(processo, campus, mes)
             movimentacao = get_processos(
@@ -113,7 +116,7 @@ class ProcessoService:
         ano = datetime.now().year
 
         for processo in processos:
-            mes = "{}/{}".format(self.find_month_in_db(processo, campus), ano)
+            mes = self.get_referring_date_in_db(processo, campus)
 
             try:
                 if processo == "auxilio_residentes":
