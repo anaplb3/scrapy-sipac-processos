@@ -12,6 +12,9 @@ cfg = environment_config()
 
 
 @api.route("")
+@api.doc(params={
+    "chave": "credencial para validar o request"
+})
 class PopulandoBanco(Resource):
     def get(self):
         chave = request.args.get("chave", "", str)
