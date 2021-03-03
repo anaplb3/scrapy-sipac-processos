@@ -40,7 +40,7 @@ class ProcessoService:
                         "ProcessosServiceError in update_processos: {}".format(str(e)))
                     continue
         self.auxilios_campus_I()
-        self.auxilio_complementar_campus_III()
+        #self.auxilio_complementar_campus_III()
 
     def get_referring_date_in_db(self, auxilio, campus):
         query = """SELECT status_terminado, mes_referente FROM processos 
