@@ -116,11 +116,11 @@ class ProcessoService:
         ano = datetime.now().year
 
         for processo in processos:
+            if processo == "auxilio_residentes":
+                campus = "MANGABEIRA"
             mes = self.get_referring_date_in_db(processo, campus)
 
             try:
-                if processo == "auxilio_residentes":
-                    campus = "MANGABEIRA"
                 resultados_selenium = open(processo, campus, mes)
                 movimentacao = get_processos(
                     resultados_selenium[0], resultados_selenium[1])
