@@ -2,7 +2,7 @@ import os
 
 DEV_CFG = {
     "debug": True,
-    "database_url": "postgresql://postgres:starwars@localhost/processos_sipac",
+    "database_url": "postgresql://postgres:postgres@localhost/processos_sipac",
     "sslmode": "disable",
     "port": 5000,
     "host": "127.0.0.1",

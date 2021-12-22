@@ -1,10 +1,8 @@
-from flask_script import Manager
 from flask import Flask
 from flask_cors import CORS
 from app.main.service.processos_service import ProcessoService
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.main.bd.repository import init_bd, environment_config
-import os
 from app import blueprint
 
 app = Flask(__name__)
@@ -21,10 +19,7 @@ cron.add_job(service.update_processos, 'cron', day_of_week=(
 
 app.app_context().push()
 
-manager = Manager(app)
 
-
-@manager.command
 def run():
     init_bd()
     cron.start()
@@ -33,4 +28,4 @@ def run():
 
 
 if __name__ == "__main__":
-    manager.run()
+    run()
