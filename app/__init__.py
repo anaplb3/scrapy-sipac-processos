@@ -3,8 +3,8 @@ from app.main.controller.keepalive_controller import api as keepalive_namespace
 from app.main.controller.populando_banco_controller import api as populando_namespace
 from app.main.controller.campus_controller import api as campus_namespace
 from app.main.controller.processos_anteriores_controller import api as processo_anterior_namespace
-from flask import Flask, Blueprint, url_for
-from flask_restx import Api, Resource, apidoc
+from flask import Blueprint
+from flask_restx import Api, apidoc
 
 url_prefix = "/api/v1"
 apidoc.url_prefix = url_prefix
