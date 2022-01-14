@@ -5,7 +5,7 @@ import os
 from ..bd.repository import environment_config
 
 
-def find_tipo_processo(tipo_processo, campus):
+def find_tipo_processo(tipo_processo):
     if tipo_processo == "auxilio_emergencial":
         return "EMERGENCIAL"
     elif tipo_processo == "auxilio_alimentacao_residencia":
@@ -23,7 +23,7 @@ def find_tipo_processo(tipo_processo, campus):
     elif tipo_processo == "auxilio_emergencial_complementar":
         return "ALIMENTAÇÃO COMPLEMENTAR"
     elif tipo_processo == "auxilio_creche":
-        return "CRECHE"
+        return "PRÉ-ESCOLAR"
 
 
 def setting_selenium():
@@ -43,7 +43,7 @@ def setting_selenium():
 
 def open(tipo_processo, campus, mes):
     driver = setting_selenium()
-    auxilio = find_tipo_processo(tipo_processo, campus)
+    auxilio = find_tipo_processo(tipo_processo)
 
     print("auxilio = {} | campus = {} | mes = {}".format(
         auxilio, campus, mes))
@@ -94,7 +94,7 @@ def find_auxilio(assunto, auxilio, campus, mes):
         is_auxilio = (auxilio in assunto) and (
             "EMERGENCIAL" not in assunto) and ("RESIDENTES" not in assunto)
 
-    if auxilio == "CRECHE":
+    if auxilio == "PRÉ-ESCOLAR":
         is_campus = True
     else:
         is_campus = find_campus(assunto, campus)
