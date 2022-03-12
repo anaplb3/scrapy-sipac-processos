@@ -2,6 +2,13 @@ from bs4 import BeautifulSoup
 from app.main.model.model import MovimentacaoProcesso, MovimentacaoProcesso
 
 
+def format_unidade_destino(unidade_destino):
+    if not unidade_destino.strip():
+        return "Unidade de destino não informado"
+    else:
+        return unidade_destino
+
+
 def get_processos(html_content, url):
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -29,7 +36,7 @@ def get_processos(html_content, url):
     if ultima_movimentacao_copy:
         ultima_movimentacao = ultima_movimentacao_copy
 
-    unidade_destino = ultima_movimentacao[2].text
+    unidade_destino = format_unidade_destino(ultima_movimentacao[2].text)
     recebido_em = ultima_movimentacao[4].text
     status_terminado = "PRA - ARQUIVO DA DAF" in unidade_destino
 
