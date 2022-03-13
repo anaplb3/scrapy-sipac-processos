@@ -12,6 +12,7 @@ def format_unidade_destino(unidade_destino):
 def get_processos(html_content, url):
     soup = BeautifulSoup(html_content, 'html.parser')
 
+    # call get_table
     # Procurando a tabela com as movimentações dos processos da PRAPE
     table_name = "Movimentações do Processo"
     for caption in soup.find_all('caption'):
@@ -24,6 +25,7 @@ def get_processos(html_content, url):
 
     # Aqui é pego o último table data da lista, correspondente a última movimentação
     ultima_movimentacao = movimentacoes[len(movimentacoes) - 1].find_all('td')
+    #call get_last_movement
     ultima_movimentacao_copy = []
     
     for moma in ultima_movimentacao:
@@ -41,3 +43,24 @@ def get_processos(html_content, url):
     status_terminado = "PRA - ARQUIVO DA DAF" in unidade_destino
 
     return MovimentacaoProcesso(unidade_destino, recebido_em, status_terminado, url)
+
+def get_table(soup):
+    table_name = "Movimentações do Processo"
+
+    for caption in soup.find_all('caption'):
+        if caption.get_text() == table_name:
+            return caption.find_parent('table')
+    return None
+
+def get_last_movement(last_movement):
+    last_movement_copy = []
+    
+    for movement in last_movement:
+
+        # Caso tenha um despacho, é pego a penúltima movimentação que contém os dados necessários
+        if 'Despacho Informativo' in movement.text:
+            last_movement_copy =  last_movement[len(last_movement) - 3].find_all('td')
+            break
+
+    if last_movement_copy:
+        last_movement = last_movement_copy

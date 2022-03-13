@@ -86,3 +86,14 @@ class MovimentacaoAnteriorDTO(object):
             'campus': self.campus,
             'mes_referente': self.mes_referente
         }
+
+class Excluded(object):
+    def __init__(self, registration, reason_to_be_excluded):
+        self.registration = registration
+        self.reason_to_be_excluded = reason_to_be_excluded
+    
+    def serialize(self):
+        return {
+            'registration': self.registration,
+            'reason_to_be_excluded': self.reason_to_be_excluded
+        }
