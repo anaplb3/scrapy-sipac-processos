@@ -56,6 +56,10 @@ def create_table(cursor, connection):
         )
     """
 
+    query_create_table_excluded_students = """"
+     
+    """
+
     cursor.execute(query_create_table_campus)
     cursor.execute(query_create_table_auxilios)
     cursor.execute(query_create_table_processos)

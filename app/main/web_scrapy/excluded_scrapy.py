@@ -10,12 +10,16 @@ def get_excluded_page_source(tipo_auxilio, campus, mes):
     driver = webdriver.Chrome("C:\chromedriver") 
     driver.get(resultados_selenium[1])
 
-    driver.find_element_by_xpath(
-        "/html/body/div/div/div[2]/form/table/tbody/tr[3]/td/table/tbody/tr[13]/td/table/tbody/tr/td[3]/a/img"
-    ).click()
+    try:
+        driver.find_element_by_xpath(
+            "/html/body/div/div/div[2]/form/table/tbody/tr[3]/td/table/tbody/tr[13]/td/table/tbody/tr/td[3]/a/img"
+        ).click()
 
-    driver.close
-    return driver.page_source
+        driver.close
+        return driver.page_source
+    except Exception:
+        return None
+ 
 
 def get_table_data_with_excluded(page_source):
     ex_soup = BeautifulSoup(page_source, 'html.parser')
@@ -48,5 +52,8 @@ def create_excluded_model(excluded_tr):
 
 def get_excluded_list(tipo_auxilio, campus, mes):
     page_source = get_excluded_page_source(tipo_auxilio, campus, mes)
-    excluded_tr = get_table_data_with_excluded(page_source)
-    return create_excluded_model(excluded_tr)
+    if page_source is None:
+        []
+    else:
+        excluded_tr = get_table_data_with_excluded(page_source)
+        return create_excluded_model(excluded_tr)
