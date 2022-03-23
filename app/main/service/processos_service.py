@@ -34,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_update(
+                        self.execute_insert(
                             movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
@@ -51,8 +51,8 @@ class ProcessoService:
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
             if auxilio == "auxilio_emergencial" or auxilio == "auxilio_emergencial_complementar":
-                return "Março"
-            return "Março"
+                return "Março/2022"
+            return "Março/2022"
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
