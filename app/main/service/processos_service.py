@@ -34,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_insert(
+                        self.execute_update(
                             movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
