@@ -23,6 +23,7 @@ API que extrai os dados dos auxílios da UFPB para fins de acompanhamento. Atual
  - Residência RUMF ("auxilio_residencia_rumf")
  - Residência RUFET ("auxilio_residencia_rufet")
  - Alimentação residentes Mangabeira e Santa Rita ("auxilio_residentes")
+ - Auxílio transporte faixas I, II e III
  
 
 # Response
