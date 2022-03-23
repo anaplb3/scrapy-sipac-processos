@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 import time
 import os
 from ..bd.repository import environment_config
+from app.main.model.aid_enum import Aid
 
 
 def find_tipo_processo(tipo_processo):
@@ -24,6 +25,8 @@ def find_tipo_processo(tipo_processo):
         return "ALIMENTAÇÃO COMPLEMENTAR"
     elif tipo_processo == "auxilio_creche":
         return "PRÉ-ESCOLAR"
+    elif tipo_processo == "(FAIXA I)":
+        return Aid.AUXILIO_TRANSPORTE_FAIXA_I.value
 
 
 def setting_selenium():
@@ -89,10 +92,10 @@ def open(tipo_processo, campus, mes):
 def find_auxilio(assunto, auxilio, campus, mes):
     if "FOLHA DE PAGAMENTO" in assunto:
         return False
-    is_auxilio = auxilio in assunto
-    if auxilio == "ALIMENTAÇÃO":
+    is_auxilio = check_aid_in_text(auxilio, assunto)
+    '''if auxilio == "ALIMENTAÇÃO":
         is_auxilio = (auxilio in assunto) and (
-            "EMERGENCIAL" not in assunto) and ("RESIDENTES" not in assunto)
+            "EMERGENCIAL" not in assunto) and ("RESIDENTES" not in assunto)'''
 
     if auxilio == "PRÉ-ESCOLAR":
         is_campus = True
@@ -109,3 +112,25 @@ def find_campus(text, campus):
         if word == campus:
             return True
     return False
+
+def check_transport_aid_range(assunto, range):
+    if (Aid.AUXILIO_TRANSPORTE.value in assunto) and (range in assunto):
+        return True
+
+def check_food_aid_special_case(aid, text):
+    return (aid in text) and (
+            "EMERGENCIAL" not in text) and ("RESIDENTES" not in text)
+
+def check_aid_in_text(aid, text):
+    if (is_transport_aid(aid)):
+        return check_transport_aid_range(text, aid)
+    elif (is_food_aid(aid)):
+        return check_food_aid_special_case(aid, text)
+    else:
+        return aid in text
+
+def is_transport_aid(aid):
+    return (aid == Aid.AUXILIO_TRANSPORTE_FAIXA_I.value) or (aid == Aid.AUXILIO_TRANSPORTE_FAIXA_II.value) or (aid == Aid.AUXILIO_TRANSPORTE_FAIXA_III.value)
+
+def is_food_aid(aid):
+    return aid == Aid.AUXILIO_ALIMENTACAO.value
