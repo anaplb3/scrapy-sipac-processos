@@ -25,8 +25,12 @@ def find_tipo_processo(tipo_processo):
         return "ALIMENTAÇÃO COMPLEMENTAR"
     elif tipo_processo == "auxilio_creche":
         return "PRÉ-ESCOLAR"
-    elif tipo_processo == "(FAIXA I)":
+    elif tipo_processo == "auxilio_transporte_I":
         return Aid.AUXILIO_TRANSPORTE_FAIXA_I.value
+    elif tipo_processo == "auxilio_transporte_II":
+        return Aid.AUXILIO_TRANSPORTE_FAIXA_II.value
+    elif tipo_processo == "auxilio_transporte_III":
+        return Aid.AUXILIO_TRANSPORTE_FAIXA_III.value
 
 
 def setting_selenium():

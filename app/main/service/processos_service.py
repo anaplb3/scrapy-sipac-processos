@@ -16,7 +16,8 @@ class ProcessoService:
 
     def update_processos(self):
         processos = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                     "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
+                     "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche",
+                     "auxilio_transporte_I", "auxilio_transporte_II", "auxilio_transporte_III"]
         campus = ["I", "II", "III", "IV"]
 
         for processo in processos:
@@ -33,7 +34,7 @@ class ProcessoService:
                     if movimentacao == None:
                         continue
                     else:
-                        self.execute_update(
+                        self.execute_insert(
                             movimentacao, camp, processo, mes)
                 except Exception as e:
                     print(
@@ -50,8 +51,8 @@ class ProcessoService:
         resultado = list(self.cursor.fetchall())
         if len(resultado) == 0:
             if auxilio == "auxilio_emergencial" or auxilio == "auxilio_emergencial_complementar":
-                return "Agosto"
-            return "Setembro"
+                return "Março"
+            return "Março"
         else:
             status = resultado[0][0]
             mes_referente = resultado[0][1].split("/")[0]
@@ -285,3 +286,9 @@ class ProcessoService:
         return MovimentacaoAnteriorDTO(id_auxilio, id_campus,
                                        processo[0], processo[1],
                                        processo[2], processo[3])
+                    
+    def check_if_table_is_empty(self):
+        query = """ select count(1) where exists (select * from processos) """
+        self.cursor.execute(query)
+        result = list(self.cursor.fetchone())[0]
+        return result > 0

@@ -104,13 +104,17 @@ def get_auxilio_id(cursor, id_campus, tipo_auxilio):
 
 def insert_auxilios_values(cursor, connection):
     processos_campus_I = ["auxilio_emergencial", "auxilio_alimentacao", "auxilio_moradia", "auxilio_residencia_rumf",
-                          "auxilio_residencia_rufet", "auxilio_creche"]
+                          "auxilio_residencia_rufet", "auxilio_creche", "auxilio_transporte_I", 
+                          "auxilio_transporte_II", "auxilio_transporte_III"]
     processos_campus_II = ["auxilio_emergencial",
-                           "auxilio_alimentacao_residencia", "auxilio_moradia", "auxilio_creche"]
+                           "auxilio_alimentacao_residencia", "auxilio_moradia", "auxilio_creche",
+                           "auxilio_transporte_I", "auxilio_transporte_II", "auxilio_transporte_III"]
     processos_campus_III = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                            "auxilio_moradia", "auxilio_emergencial_complementar", "auxilio_creche"]
+                            "auxilio_moradia", "auxilio_emergencial_complementar", "auxilio_creche",
+                            "auxilio_transporte_I", "auxilio_transporte_II", "auxilio_transporte_III"]
     processos_campus_IV = ["auxilio_emergencial", "auxilio_alimentacao_residencia",
-                           "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche"]
+                           "auxilio_alimentacao", "auxilio_moradia", "auxilio_creche",
+                           "auxilio_transporte_I", "auxilio_transporte_II", "auxilio_transporte_III"]
     processo_campus_mangabeira = ["auxilio_residentes", "auxilio_creche"]
 
     insert_auxilio_value(cursor, processos_campus_I, "I")
@@ -149,6 +153,12 @@ def get_visualization_name(auxilio):
         return "Pecúnia Emergencial Alimentação Complementar"
     elif (auxilio == 'auxilio_creche'):
         return "Aux. Creche"
+    elif (auxilio == 'auxilio_transporte_I'):
+        return "Aux. Transporte (Faixa I)"
+    elif (auxilio == 'auxilio_transporte_II'):
+        return "Aux. Transporte (Faixa II)"
+    elif (auxilio == 'auxilio_transporte_III'):
+        return "Aux. Transporte (Faixa III)"
 
 
 def init_bd():
